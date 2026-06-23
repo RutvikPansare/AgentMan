@@ -37,6 +37,15 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
     }
   });
 
+  app.post('/api/environments/active', async (req, res) => {
+    try {
+      await context.environmentManager.setActiveEnvironment(req.body.name);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   // Serve static UI build
   const uiBuildPath = path.join(process.cwd(), 'src', 'ui', 'dist');
   app.use(express.static(uiBuildPath));

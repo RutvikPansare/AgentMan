@@ -3,12 +3,14 @@
 import { Sidebar } from './components/Sidebar';
 import { RequestEditor } from './components/RequestEditor';
 import { ResponseViewer } from './components/ResponseViewer';
+import { EnvironmentSwitcher } from './components/EnvironmentSwitcher';
 
 function App() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="h-14 border-b border-gray-800 bg-gray-950 flex items-center px-4 shrink-0">
+      <header className="h-14 border-b border-gray-800 bg-gray-950 flex items-center justify-between px-4 shrink-0">
         <h1 className="font-semibold tracking-wide">Reqly</h1>
+        <EnvironmentSwitcher />
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-64 border-r border-gray-800 bg-gray-900 overflow-y-auto">

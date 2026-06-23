@@ -9,9 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-015** Response Viewer Component
-  - Status code, latency, response body (JSON pretty-printed), response headers
-  - Copy button
 - [ ] **T-016** Environment Switcher Component
   - Dropdown in top bar to switch between dev/staging/prod instantly
 - [ ] **T-017** Settings Panel Component

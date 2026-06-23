@@ -9,3 +9,13 @@ export async function fetchEnvironments() {
   if (!res.ok) throw new Error('Failed to fetch environments');
   return res.json();
 }
+
+export async function setActiveEnvironment(name: string) {
+  const res = await fetch('/api/environments/active', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  });
+  if (!res.ok) throw new Error('Failed to set active environment');
+  return res.json();
+}

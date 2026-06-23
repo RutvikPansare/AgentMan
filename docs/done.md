@@ -7,6 +7,7 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-23
+- [x] **T-015** Response Viewer Component
 - [x] **T-014** Request Editor Component
 - [x] **T-013** Sidebar Component
 - [x] **T-012** Express Server & UI Serving (`src/server/express.ts`)
