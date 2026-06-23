@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchCollections, fetchEnvironments, setActiveEnvironment, createCollection, deleteRequest, updateRequest, addRequest } from '../api';
 import { CapturePanel } from './CapturePanel';
+import { EnvironmentEditor } from './EnvironmentEditor';
 
 interface SidebarProps {
   activeRequest: any;
@@ -21,6 +22,8 @@ export function Sidebar({ activeRequest, onSelectRequest, onRunCollection }: Sid
 
   const [addingReqTo, setAddingReqTo] = useState<string | null>(null);
   const [newReqName, setNewReqName] = useState('');
+
+  const [editingEnv, setEditingEnv] = useState<any>(null);
 
   const [contextMenu, setContextMenu] = useState<{ x: number, y: number, col: string, req: string } | null>(null);
 
@@ -126,14 +129,27 @@ export function Sidebar({ activeRequest, onSelectRequest, onRunCollection }: Sid
           {environments?.environments?.map((env: any) => (
             <li 
               key={env.name} 
-              className={`text-sm p-1 rounded cursor-pointer ${environments?.active === env.name ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white'}`}
-              onClick={async () => {
-                await setActiveEnvironment(env.name);
-                loadData();
-              }}
+              className={`text-sm p-1 rounded group flex items-center justify-between ${environments?.active === env.name ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white'}`}
             >
-              <span className={`inline-block w-2 h-2 rounded-full mr-2 ${environments?.active === env.name ? 'bg-green-500' : 'bg-transparent'}`}></span>
-              {env.name}
+              <div 
+                className="flex-1 cursor-pointer flex items-center overflow-hidden"
+                onClick={async () => {
+                  await setActiveEnvironment(env.name);
+                  loadData();
+                }}
+              >
+                <span className={`inline-block w-2 h-2 rounded-full mr-2 shrink-0 ${environments?.active === env.name ? 'bg-green-500' : 'bg-transparent'}`}></span>
+                <span className="truncate">{env.name}</span>
+              </div>
+              <button 
+                className="opacity-0 group-hover:opacity-100 px-1 text-gray-500 hover:text-blue-400 transition-opacity"
+                title="Edit Variables"
+                onClick={() => setEditingEnv(env)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                </svg>
+              </button>
             </li>
           ))}
         </ul>
@@ -261,6 +277,17 @@ export function Sidebar({ activeRequest, onSelectRequest, onRunCollection }: Sid
         // Find captured collection to pass
         onSelectRequest(req, 'captured');
       }} />
+
+      {editingEnv && (
+        <EnvironmentEditor 
+          environment={editingEnv} 
+          onClose={() => setEditingEnv(null)}
+          onSaveSuccess={() => {
+            loadData();
+            setEditingEnv(null);
+          }}
+        />
+      )}
     </div>
   );
 }

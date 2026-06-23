@@ -10,6 +10,26 @@ export async function fetchEnvironments() {
   return res.json();
 }
 
+export const createEnvironment = async (name: string) => {
+  const res = await fetch('/api/environments', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, variables: {} })
+  });
+  if (!res.ok) throw new Error('Failed to create environment');
+  return res.json();
+};
+
+export const updateEnvironment = async (name: string, variables: Record<string, string>) => {
+  const res = await fetch(`/api/environments/${encodeURIComponent(name)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ variables })
+  });
+  if (!res.ok) throw new Error('Failed to update environment');
+  return res.json();
+};
+
 export async function setActiveEnvironment(name: string) {
   const res = await fetch('/api/environments/active', {
     method: 'POST',

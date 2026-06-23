@@ -97,4 +97,15 @@ export class EnvironmentManager {
     env.variables[key] = value;
     await this.saveStore(store);
   }
+
+  async updateEnvironment(name: string, variables: Record<string, string>): Promise<void> {
+    const store = await this.loadStore();
+    const env = store.environments.find(e => e.name === name);
+    if (!env) {
+      throw new EnvironmentNotFoundError(`Environment ${name} not found`);
+    }
+    
+    env.variables = variables;
+    await this.saveStore(store);
+  }
 }

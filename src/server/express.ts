@@ -150,6 +150,15 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
     }
   });
 
+  app.put('/api/environments/:name', async (req, res) => {
+    try {
+      await context.environmentManager.updateEnvironment(req.params.name, req.body.variables || {});
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   const globalConfigPath = path.join(os.homedir(), '.reqly', 'config.json');
 
   app.post('/api/run/collection', async (req, res) => {
