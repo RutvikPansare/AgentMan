@@ -16,6 +16,9 @@ export function Sidebar({ activeRequest, onSelectRequest, onRunCollection }: Sid
   const [creatingCol, setCreatingCol] = useState(false);
   const [newColName, setNewColName] = useState('');
   
+  const [creatingEnv, setCreatingEnv] = useState(false);
+  const [newEnvName, setNewEnvName] = useState('');
+
   const [addingReqTo, setAddingReqTo] = useState<string | null>(null);
   const [newReqName, setNewReqName] = useState('');
 
@@ -41,6 +44,21 @@ export function Sidebar({ activeRequest, onSelectRequest, onRunCollection }: Sid
     }
     setCreatingCol(false);
     setNewColName('');
+  };
+
+  const handleCreateEnv = async () => {
+    if (newEnvName.trim()) {
+      await fetch('/api/environments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newEnvName.trim(), variables: {} })
+      });
+      loadData();
+      await setActiveEnvironment(newEnvName.trim());
+      loadData();
+    }
+    setCreatingEnv(false);
+    setNewEnvName('');
   };
 
   const handleAddReq = async (colName: string) => {
@@ -83,8 +101,28 @@ export function Sidebar({ activeRequest, onSelectRequest, onRunCollection }: Sid
   return (
     <div className="p-4 flex flex-col gap-6 relative">
       <section>
-        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Environments</h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Environments</h2>
+          <button onClick={() => setCreatingEnv(true)} className="text-xs text-blue-400 hover:text-blue-300 px-2 py-0.5 rounded hover:bg-gray-800 transition-colors">+ New</button>
+        </div>
+        
         <ul className="space-y-1">
+          {creatingEnv && (
+            <li className="mb-2">
+              <input 
+                autoFocus
+                className="w-full bg-gray-950 border border-gray-700 rounded px-2 py-1 text-sm text-white outline-none focus:border-blue-500"
+                placeholder="Environment name..."
+                value={newEnvName}
+                onChange={e => setNewEnvName(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleCreateEnv();
+                  if (e.key === 'Escape') setCreatingEnv(false);
+                }}
+                onBlur={() => setCreatingEnv(false)}
+              />
+            </li>
+          )}
           {environments?.environments?.map((env: any) => (
             <li 
               key={env.name} 

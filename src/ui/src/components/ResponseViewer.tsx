@@ -9,8 +9,8 @@ export function ResponseViewer({ response, isSending }: ResponseViewerProps) {
   const [activeTab, setActiveTab] = useState('body');
 
   const handleCopy = () => {
-    if (response?.data) {
-      const txt = typeof response.data === 'object' ? JSON.stringify(response.data, null, 2) : response.data;
+    if (response?.body) {
+      const txt = typeof response.body === 'object' ? JSON.stringify(response.body, null, 2) : response.body;
       navigator.clipboard.writeText(txt);
     }
   };
@@ -28,7 +28,7 @@ export function ResponseViewer({ response, isSending }: ResponseViewerProps) {
     );
   }
 
-  const { status, time, data, headers } = response || {};
+  const { status, latency, body, headers } = response || {};
   const isError = status >= 400;
   
   const syntaxHighlight = (jsonStr: string) => {
@@ -51,16 +51,16 @@ export function ResponseViewer({ response, isSending }: ResponseViewerProps) {
   };
 
   const getBodyHtml = () => {
-    if (!data) return '';
+    if (body === undefined || body === null) return '';
     try {
-      const str = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+      const str = typeof body === 'object' ? JSON.stringify(body, null, 2) : body;
       // Basic JSON detect
-      if (str.trim().startsWith('{') || str.trim().startsWith('[')) {
+      if (typeof str === 'string' && (str.trim().startsWith('{') || str.trim().startsWith('['))) {
         return syntaxHighlight(str);
       }
       return str; // plain text
     } catch {
-      return String(data);
+      return String(body);
     }
   };
 
@@ -81,7 +81,7 @@ export function ResponseViewer({ response, isSending }: ResponseViewerProps) {
             <span className={`px-2 py-0.5 rounded text-xs font-bold ${isError ? 'bg-red-900/50 text-red-400' : 'bg-green-900/50 text-green-400'}`}>
               {status} {isError ? 'Error' : 'OK'}
             </span>
-            <span className="text-gray-400">{time || 0} ms</span>
+            <span className="text-gray-400">{latency || 0} ms</span>
             <button 
               onClick={handleCopy}
               className="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded transition-colors ml-2"
@@ -126,7 +126,7 @@ export function ResponseViewer({ response, isSending }: ResponseViewerProps) {
           <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm z-10" />
         )}
         
-        {activeTab === 'body' && data && (
+        {activeTab === 'body' && body !== undefined && body !== null && (
           <pre className="p-4 text-gray-300 whitespace-pre-wrap outline-none" dangerouslySetInnerHTML={{ __html: getBodyHtml() }} />
         )}
         
@@ -146,7 +146,7 @@ export function ResponseViewer({ response, isSending }: ResponseViewerProps) {
             HTTP/1.1 {status} {isError ? 'Error' : 'OK'}{'\n'}
             {Object.entries(headers).map(([k, v]) => `${k}: ${v}`).join('\n')}
             {'\n\n'}
-            {typeof data === 'object' ? JSON.stringify(data, null, 2) : data}
+            {typeof body === 'object' ? JSON.stringify(body, null, 2) : body}
           </pre>
         )}
       </div>

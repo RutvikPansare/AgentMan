@@ -26,12 +26,12 @@ function App() {
       });
       const data = await res.json();
       if (data.response) {
-        setResponse({ ...data.response, assertions: data.assertions });
+        setResponse({ ...data.response, assertions: data.assertions, previousResponse: data.previousResponse });
       } else {
-        setResponse({ status: 500, time: 0, data: data.error, headers: {} });
+        setResponse({ status: 500, latency: 0, body: data.error, headers: {} });
       }
     } catch (e: any) {
-      setResponse({ status: 500, time: 0, data: e.message, headers: {} });
+      setResponse({ status: 500, latency: 0, body: e.message, headers: {} });
     } finally {
       setIsSending(false);
     }
