@@ -11,19 +11,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 
 
-- [ ] **T-021** Collection Runner (`src/engine/collection-runner.ts`)
-  - Follow TDD: write `src/engine/collection-runner.test.ts` first
-  - `CollectionRunner` class: takes `CollectionManager`, `HttpExecutor`, `ResponseStore`, `AssertionRunner` as constructor deps
-  - `run(collectionName: string, options?: RunOptions): Promise<CollectionRunResult>`
-  - `RunOptions`: `{ environment?: Environment, auth?: AuthProfile, stopOnFailure?: boolean }`
-  - `CollectionRunResult`: `{ collection: string, total: number, passed: number, failed: number, results: RequestRunResult[] }`
-  - `RequestRunResult`: `{ requestName: string, response: HttpResponse, assertions: AssertionResult[], passed: boolean, duration: number }`
-  - Executes requests sequentially in the order they appear in the collection YAML
-  - Stores each response in `ResponseStore` after execution so downstream requests can chain off it
-  - Runs assertions after each response, marks the request as failed if any assertion fails
-  - If `stopOnFailure: true`, halts on first failed request and returns partial results
-  - Update MCP `run_collection` tool to use this runner and return the full `CollectionRunResult` shape
-  - Update REST `POST /api/run/collection` to use this runner
 
 - [ ] **T-022** UI: Proxy capture panel
   - New sidebar section below collections: "Capture" with a toggle switch (on/off)

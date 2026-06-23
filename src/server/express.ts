@@ -71,6 +71,28 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
 
   const globalConfigPath = path.join(os.homedir(), '.reqly', 'config.json');
 
+  app.post('/api/run/collection', async (req, res) => {
+    try {
+      let env = undefined;
+      if (req.body.environmentName) {
+        const envs = await context.environmentManager.listEnvironments();
+        env = envs.find((e: any) => e.name === req.body.environmentName);
+      } else {
+        env = await context.environmentManager.getActiveEnvironment() || undefined;
+      }
+      
+      const { CollectionRunner } = await import('../engine/collection-runner.js');
+      const runner = new CollectionRunner(context);
+      const result = await runner.run(req.body.collectionName, { 
+        stopOnFailure: req.body.stopOnFailure,
+        environment: env
+      });
+      res.json(result);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.get('/api/config', async (req, res) => {
     try {
       const data = await fs.readFile(globalConfigPath, 'utf-8');
