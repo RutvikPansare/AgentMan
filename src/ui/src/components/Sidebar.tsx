@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchCollections, fetchEnvironments } from '../api';
+import { CapturePanel } from './CapturePanel';
 
 export function Sidebar() {
   const [collections, setCollections] = useState<any[]>([]);
@@ -42,6 +43,7 @@ export function Sidebar() {
           ))}
         </div>
       </section>
+      <CapturePanel onSelectCaptured={(req) => console.log('Captured selected', req)} />
     </div>
   );
 }

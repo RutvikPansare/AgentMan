@@ -12,6 +12,7 @@ export interface ProxyConfig {
 export class ProxyServer {
   private server: http.Server | null = null;
   private collectionManager: CollectionManager;
+  public capturedRequests: any[] = [];
 
   constructor(collectionManager: CollectionManager) {
     this.collectionManager = collectionManager;
@@ -164,9 +165,12 @@ export class ProxyServer {
     const name = `${config.method} ${new URL(config.url).pathname}`.replace(/[^a-zA-Z0-9- ]/g, '').trim().substring(0, 30);
     const uniqueName = `${name} ${Date.now()}`;
 
-    await this.collectionManager.addRequest(collectionName, {
+    const requestConfig = {
       ...config,
       name: uniqueName
-    });
+    };
+
+    await this.collectionManager.addRequest(collectionName, requestConfig);
+    this.capturedRequests.push(requestConfig);
   }
 }

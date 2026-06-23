@@ -32,6 +32,15 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
     }
   });
 
+  app.get('/api/proxy/captured', (req, res) => {
+    res.json(context.proxyServer.capturedRequests);
+  });
+
+  app.delete('/api/proxy/captured', (req, res) => {
+    context.proxyServer.capturedRequests = [];
+    res.json({ success: true });
+  });
+
   app.get('/api/collections', async (req, res) => {
     try {
       const cols = await context.collectionManager.listCollections();
