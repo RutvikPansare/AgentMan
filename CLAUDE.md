@@ -135,6 +135,7 @@ Before declaring any task "complete", output a short checklist confirming living
 ### General Principles
 - Prefer simple, readable, maintainable code.
 - Follow clean architecture and separation of concerns.
+- Follow SOLID and DRY principles when writing code.
 - If something is unclear, **ask instead of assuming**.
 
 ## 3. Living Docs (MANDATORY)
