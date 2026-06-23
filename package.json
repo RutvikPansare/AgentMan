@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/server/index.ts",
+  "bin": {
+    "reqly": "dist/server/index.js"
+  },
   "type": "module",
   "directories": {
     "doc": "docs"

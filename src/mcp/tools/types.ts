@@ -19,6 +19,7 @@ export interface ToolDefinition {
 }
 
 export interface ToolHandlerResult {
+  [x: string]: unknown;
   content: Array<{ type: 'text'; text: string }>;
   isError?: boolean;
 }
