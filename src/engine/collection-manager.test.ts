@@ -1,0 +1,86 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
+import { CollectionManager, CollectionNotFoundError, RequestNotFoundError } from './collection-manager.js';
+import { CollectionRequest } from '../types/index.js';
+
+describe('CollectionManager', () => {
+  let tmpDir: string;
+  let manager: CollectionManager;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'reqly-test-'));
+    manager = new CollectionManager(tmpDir);
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('should create and get a collection', async () => {
+    const col = await manager.createCollection('TestCol');
+    expect(col.name).toBe('TestCol');
+    expect(col.requests).toEqual([]);
+
+    const retrieved = await manager.getCollection('TestCol');
+    expect(retrieved.name).toBe('TestCol');
+  });
+
+  it('should list collections', async () => {
+    await manager.createCollection('Col1');
+    await manager.createCollection('Col2');
+
+    const cols = await manager.listCollections();
+    expect(cols).toHaveLength(2);
+    expect(cols.map(c => c.name).sort()).toEqual(['Col1', 'Col2']);
+  });
+
+  it('should throw CollectionNotFoundError if getting missing collection', async () => {
+    await expect(manager.getCollection('Missing')).rejects.toThrow(CollectionNotFoundError);
+  });
+
+  it('should add, get, and delete requests', async () => {
+    await manager.createCollection('TestCol');
+
+    const req: CollectionRequest = {
+      id: 'req-1',
+      name: 'GetUser',
+      method: 'GET',
+      url: 'http://example.com/user/1',
+    };
+
+    await manager.addRequest('TestCol', req);
+
+    const retrievedReq = await manager.getRequest('TestCol', 'GetUser');
+    expect(retrievedReq.url).toBe('http://example.com/user/1');
+
+    const col = await manager.getCollection('TestCol');
+    expect(col.requests).toHaveLength(1);
+    expect(col.requests[0].name).toBe('GetUser');
+
+    await manager.deleteRequest('TestCol', 'GetUser');
+    
+    await expect(manager.getRequest('TestCol', 'GetUser')).rejects.toThrow(RequestNotFoundError);
+    const colAfterDelete = await manager.getCollection('TestCol');
+    expect(colAfterDelete.requests).toHaveLength(0);
+  });
+
+  it('should update an existing request when adding with same name', async () => {
+    await manager.createCollection('TestCol');
+
+    const req: CollectionRequest = {
+      id: 'req-1',
+      name: 'UpdateMe',
+      method: 'GET',
+      url: 'http://old.com',
+    };
+    await manager.addRequest('TestCol', req);
+
+    req.url = 'http://new.com';
+    await manager.addRequest('TestCol', req);
+
+    const retrievedReq = await manager.getRequest('TestCol', 'UpdateMe');
+    expect(retrievedReq.url).toBe('http://new.com');
+  });
+});

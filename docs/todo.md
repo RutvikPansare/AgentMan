@@ -9,19 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-006** Collection Manager (`src/engine/collection-manager.ts`)
-  - Follow TDD: write `src/engine/collection-manager.test.ts` first (use temp dirs via `os.tmpdir()`)
-  - `CollectionManager` class - takes a `baseDir` (path to `.reqly/collections/`) in constructor (DI, testable)
-  - `createCollection(name: string): Promise<Collection>`
-  - `getCollection(name: string): Promise<Collection>`
-  - `listCollections(): Promise<Collection[]>`
-  - `addRequest(collectionName: string, req: CollectionRequest): Promise<void>`
-  - `getRequest(collectionName: string, requestName: string): Promise<CollectionRequest>`
-  - `deleteRequest(collectionName: string, requestName: string): Promise<void>`
-  - Each collection is a folder under `baseDir/`, each request is a `<name>.yaml` file inside it
-  - YAML serialization via `js-yaml`
-  - Throws typed errors: `CollectionNotFoundError`, `RequestNotFoundError`
-
 - [ ] **T-007** Environment Manager (`src/engine/environment-manager.ts`)
   - Follow TDD: write `src/engine/environment-manager.test.ts` first
   - `EnvironmentManager` class - takes `configPath` in constructor (path to `.reqly/environments.yaml`)

@@ -7,6 +7,7 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-23
+- [x] **T-006** Collection Manager (`src/engine/collection-manager.ts`)
 - [x] **T-005** Variable Substitutor (`src/engine/variable-substitutor.ts`)
 - [x] **T-004** HTTP Executor (`src/engine/http-executor.ts`)
 - [x] **T-003** Shared TypeScript types (`src/types/`)
