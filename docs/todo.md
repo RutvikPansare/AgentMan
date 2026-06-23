@@ -9,17 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-002** Project scaffold
-  - `npm init` with package name `reqly`, entry `src/server/index.ts`
-  - Install core deps: `typescript`, `tsx`, `vitest`, `@modelcontextprotocol/sdk`, `express`, `js-yaml`, `undici`
-  - Install dev deps: `@types/node`, `@types/express`, `@types/js-yaml`
-  - `tsconfig.json`: strict mode, `paths: { "@/*": ["src/*"] }`, target ES2022, module NodeNext
-  - `vitest.config.ts`: include `src/**/*.test.ts`
-  - `package.json` scripts: `dev`, `build`, `test`, `start`
-  - `.gitignore`: node_modules, dist, .env
-  - Folder structure: create empty `src/server/`, `src/engine/`, `src/ui/`, `src/mcp/`, `src/types/`
-  - No implementation yet - scaffold only
-
 - [ ] **T-003** Shared TypeScript types (`src/types/`)
   - `src/types/request.ts`: `HttpMethod`, `RequestConfig` (method, url, headers, body, params, authProfileId, environmentId)
   - `src/types/collection.ts`: `Collection` (name, description, requests), `CollectionRequest` (extends RequestConfig + id, name)
