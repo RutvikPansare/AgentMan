@@ -38,3 +38,4 @@ Newest date first. Don't edit history - only append.
 - [x] **T-026** Sidebar - functional collection tree
 - [x] **T-027** Top bar - environment switcher + settings icon
 - [x] **T-028** Auth tab - complete editor
+- [x] **T-029** Response Viewer - complete implementation

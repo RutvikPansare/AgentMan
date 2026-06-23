@@ -14,7 +14,10 @@ function App() {
   const [response, setResponse] = useState<any>(null);
   const [runningCollection, setRunningCollection] = useState<string | null>(null);
 
+  const [isSending, setIsSending] = useState(false);
+
   const handleFire = async (req: any) => {
+    setIsSending(true);
     try {
       const res = await fetch('/api/run/adhoc', {
         method: 'POST',
@@ -29,6 +32,8 @@ function App() {
       }
     } catch (e: any) {
       setResponse({ status: 500, time: 0, data: e.message, headers: {} });
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -62,7 +67,7 @@ function App() {
           <div className="h-1/2 min-h-[300px]">
             <RequestEditor request={activeRequest} onFire={handleFire} onSave={(req) => setActiveRequest({ ...req, _collection: activeRequest._collection })} />
           </div>
-          <ResponseViewer response={response} />
+          <ResponseViewer response={response} isSending={isSending} />
         </main>
       </div>
       <PromptBar />

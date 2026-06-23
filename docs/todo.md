@@ -12,16 +12,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 
 
-- [ ] **T-028** Auth tab - complete editor
-  - Currently shows static "auth editor coming soon..." text
-  - Replace with functional auth editor:
-  - Auth type selector at top: radio buttons or segmented control for "None" / "Bearer Token" / "API Key" / "Basic"
-  - "None": no additional inputs
-  - "Bearer Token": single text input labelled "Token". Value is sent as `Authorization: Bearer <token>` header
-  - "API Key": key name input + value input + placement toggle (Header / Query param). Key name defaults to `X-API-Key`.
-  - "Basic": username input + password input (`type="password"`). Encoded as `Authorization: Basic <base64>` on send.
-  - Auth values are stored in the current request editor state (not saved to collection until user hits Save)
-  - "Save as profile" button: takes current auth config, calls `POST /api/auth-profiles { name, type, credentials }` to persist it for reuse. Named profiles then appear in a dropdown at the top so users can pick a saved profile.
 
 - [ ] **T-029** Response Viewer - complete implementation
   - Currently shows only "No response yet" with no structure
