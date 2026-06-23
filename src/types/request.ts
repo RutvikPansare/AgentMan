@@ -1,3 +1,6 @@
+import { AuthProfile } from './auth.js';
+import { Assertion } from './assertion.js';
+
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export interface RequestConfig {
@@ -8,4 +11,5 @@ export interface RequestConfig {
   params?: Record<string, string>;
   authProfileId?: string;
   environmentId?: string;
+  assertions?: Assertion[];
 }

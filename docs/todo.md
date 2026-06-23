@@ -9,18 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-019** Test Assertions engine (`src/engine/assertion-runner.ts`)
-  - Follow TDD: write `src/engine/assertion-runner.test.ts` first
-  - `Assertion` type added to `src/types/`: `{ field: 'status' | 'body' | 'latency', operator: 'eq' | 'neq' | 'contains' | 'lt' | 'gt', value: string | number }`
-  - `AssertionResult`: `{ passed: boolean, assertion: Assertion, actual: unknown, message: string }`
-  - `runAssertions(response: HttpResponse, assertions: Assertion[]): AssertionResult[]`
-  - `status` field checks `response.status`
-  - `body` field supports dot-notation path into parsed JSON body: `body.data.token`
-  - `latency` field checks `response.latency` in ms
-  - `contains` operator: string includes check for body fields, status range is not supported here
-  - `AssertionResult.message` is human-readable: "Expected status 200, got 404"
-  - Assertions stored in `CollectionRequest.assertions: Assertion[]` in the YAML - extend types and collection manager
-  - SOLID: pure function, no side effects, no I/O
 
 - [ ] **T-020** Auto-Capture Proxy (`src/engine/proxy.ts`)
   - Local HTTP proxy server listening on a configurable port (default `7474`)
