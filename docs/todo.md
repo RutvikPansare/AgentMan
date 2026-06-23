@@ -9,18 +9,7 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-026** Sidebar - functional collection tree
-  - **Pre-check (do this first):** Buttons and sidebar items are currently unresponsive to clicks. Before building anything, open Chrome DevTools on `localhost:4242` and diagnose: (1) check the Console tab for JS errors that may have halted event registration; (2) in the Elements panel, hover over a non-working button and confirm the element under the cursor is the button itself - if it's a parent div or overlay, find and remove it; (3) check for any `position: fixed` or `position: absolute` element with no `pointer-events: none` that covers the viewport. Fix the root cause before proceeding with the rest of this task.
-  - Currently renders "ENVIRONMENTS" and "COLLECTIONS" as static labels with no content
-  - On mount: fetch `GET /api/collections`, render each collection as a collapsible folder row
-  - Collection row: chevron icon (rotates on expand) + collection name + `+` icon button to add a request (opens inline name input)
-  - "New collection" button above the list: small `+ New` button, clicking inserts a text input at top of list, Enter to confirm calls `POST /api/collections`, Escape to cancel
-  - Expanded collection shows its requests as child rows: method badge (GET=blue, POST=green, PUT=amber, PATCH=orange, DELETE=red, all `text-xs font-mono`) + request name
-  - Click a request row: sets it as the active request, pre-fills the Request Editor via shared state or context
-  - Right-click a request row: context menu with "Rename" and "Delete". Delete calls `DELETE /api/collections/:name/requests/:requestName` and refetches. Rename calls `PUT` with updated name.
-  - Active request row: `bg-zinc-800` highlight
-  - Empty collection: show muted "No requests" text when expanded
-  - ENVIRONMENTS section: show list of environment names from `GET /api/environments`, active one marked with a dot. Click to set active via `PUT /api/environments/:name/active`.
+
 
 - [ ] **T-027** Top bar - environment switcher + settings icon
   - Currently only shows "Reqly" wordmark with no controls
