@@ -59,6 +59,37 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
     }
   });
 
+  app.post('/api/collections/:name/requests', async (req, res) => {
+    try {
+      await context.collectionManager.addRequest(req.params.name, req.body);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.put('/api/collections/:name/requests/:requestName', async (req, res) => {
+    try {
+      if (req.params.requestName !== req.body.name) {
+        // Handle rename: delete old, add new
+        await context.collectionManager.deleteRequest(req.params.name, req.params.requestName);
+      }
+      await context.collectionManager.addRequest(req.params.name, req.body);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete('/api/collections/:name/requests/:requestName', async (req, res) => {
+    try {
+      await context.collectionManager.deleteRequest(req.params.name, req.params.requestName);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.get('/api/environments', async (req, res) => {
     try {
       const envs = await context.environmentManager.listEnvironments();

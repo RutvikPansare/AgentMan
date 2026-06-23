@@ -43,11 +43,15 @@ function App() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-64 border-r border-gray-800 bg-gray-900 overflow-y-auto">
-          <Sidebar onRunCollection={setRunningCollection} />
+          <Sidebar 
+            activeRequest={activeRequest}
+            onSelectRequest={(req, col) => setActiveRequest({ ...req, _collection: col })}
+            onRunCollection={setRunningCollection} 
+          />
         </aside>
         <main className="flex-1 bg-gray-950 overflow-y-auto p-4 flex flex-col gap-4">
           <div className="h-1/2 min-h-[300px]">
-            <RequestEditor request={activeRequest} onFire={handleFire} onSave={setActiveRequest} />
+            <RequestEditor request={activeRequest} onFire={handleFire} onSave={(req) => setActiveRequest({ ...req, _collection: activeRequest._collection })} />
           </div>
           <ResponseViewer response={response} />
         </main>

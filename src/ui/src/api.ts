@@ -19,3 +19,41 @@ export async function setActiveEnvironment(name: string) {
   if (!res.ok) throw new Error('Failed to set active environment');
   return res.json();
 }
+
+export async function createCollection(name: string) {
+  const res = await fetch('/api/collections', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  });
+  if (!res.ok) throw new Error('Failed to create collection');
+  return res.json();
+}
+
+export async function addRequest(collectionName: string, request: any) {
+  const res = await fetch(`/api/collections/${collectionName}/requests`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request)
+  });
+  if (!res.ok) throw new Error('Failed to add request');
+  return res.json();
+}
+
+export async function updateRequest(collectionName: string, oldRequestName: string, request: any) {
+  const res = await fetch(`/api/collections/${collectionName}/requests/${oldRequestName}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request)
+  });
+  if (!res.ok) throw new Error('Failed to update request');
+  return res.json();
+}
+
+export async function deleteRequest(collectionName: string, requestName: string) {
+  const res = await fetch(`/api/collections/${collectionName}/requests/${requestName}`, {
+    method: 'DELETE'
+  });
+  if (!res.ok) throw new Error('Failed to delete request');
+  return res.json();
+}
