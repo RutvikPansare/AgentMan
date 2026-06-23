@@ -18,3 +18,13 @@ Reqly is an execution engine, not an AI product. The AI always lives outside Req
 - **Server:** Express/Fastify serving MCP stdio interface and localhost web UI.
 - **UI:** React, served as static build.
 - **Config:** `~/.reqly/config.json` for global settings like BYOK key.
+
+## What's Built
+- **Core Engine:** HTTP execution, Collection Management (YAML), Environment substitution, Auth profiles.
+- **MCP Server:** Tools to create, list, run requests/collections, and manage proxy.
+- **Local UI:** Sidebar for collections/environments, Request Editor with params/headers/body/auth/assertions, Response Viewer with syntax highlighting and assertions results, Settings panel, Prompt bar.
+- **Differentiators:** 
+  - **Auto-Capture Proxy:** Captures live traffic and saves requests.
+  - **Test Assertions:** Verify response status, latency, and JSON body paths.
+  - **Collection Runner:** Sequentially run all requests in a collection with pass/fail tracking.
+  - **Request Chaining:** Downstream requests can access previous response data via `{{requestName.response.path}}`.
