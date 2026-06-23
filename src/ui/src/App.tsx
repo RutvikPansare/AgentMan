@@ -38,7 +38,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="h-screen flex flex-col relative overflow-hidden">
       <header className="h-14 border-b border-gray-800 bg-gray-950 flex items-center justify-between px-4 shrink-0">
         <h1 className="font-semibold tracking-wide">Reqly</h1>
         <div className="flex items-center gap-4">
@@ -55,7 +55,7 @@ function App() {
           </button>
         </div>
       </header>
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         <aside className="w-64 border-r border-gray-800 bg-gray-900 overflow-y-auto">
           <Sidebar 
             activeRequest={activeRequest}
@@ -63,11 +63,13 @@ function App() {
             onRunCollection={setRunningCollection} 
           />
         </aside>
-        <main className="flex-1 bg-gray-950 overflow-y-auto p-4 flex flex-col gap-4">
-          <div className="h-1/2 min-h-[300px]">
+        <main className="flex-1 bg-gray-950 overflow-hidden p-4 flex flex-col gap-4 min-h-0">
+          <div className="flex-1 min-h-0 flex flex-col">
             <RequestEditor request={activeRequest} onFire={handleFire} onSave={(req) => setActiveRequest({ ...req, _collection: activeRequest._collection })} />
           </div>
-          <ResponseViewer response={response} isSending={isSending} />
+          <div className="flex-1 min-h-0 flex flex-col">
+            <ResponseViewer response={response} isSending={isSending} />
+          </div>
         </main>
       </div>
       <PromptBar activeRequest={activeRequest} />
