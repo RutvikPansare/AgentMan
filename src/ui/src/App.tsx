@@ -1,6 +1,7 @@
 
 
 import { Sidebar } from './components/Sidebar';
+import { RequestEditor } from './components/RequestEditor';
 
 function App() {
   return (
@@ -12,8 +13,11 @@ function App() {
         <aside className="w-64 border-r border-gray-800 bg-gray-900 overflow-y-auto">
           <Sidebar />
         </aside>
-        <main className="flex-1 bg-gray-950 overflow-y-auto p-4">
-          {/* Request Editor & Response Viewer */}
+        <main className="flex-1 bg-gray-950 overflow-y-auto p-4 flex flex-col gap-4">
+          <div className="h-1/2 min-h-[300px]">
+            <RequestEditor request={{ name: 'New Request', method: 'GET', url: '' }} onFire={() => {}} onSave={() => {}} />
+          </div>
+          {/* Response Viewer */}
         </main>
       </div>
     </div>

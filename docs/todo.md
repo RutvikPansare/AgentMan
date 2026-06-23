@@ -9,10 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-014** Request Editor Component
-  - Method dropdown, URL bar
-  - Tabs for Headers / Body / Auth / Params
-  - Pre-filled from saved request, editable before firing
 - [ ] **T-015** Response Viewer Component
   - Status code, latency, response body (JSON pretty-printed), response headers
   - Copy button
