@@ -11,14 +11,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 
 
-- [ ] **T-027** Top bar - environment switcher + settings icon
-  - Currently only shows "Reqly" wordmark with no controls
-  - Top bar is `h-10 border-b border-zinc-800 flex items-center px-4 justify-between`
-  - Left: "Reqly" wordmark (existing)
-  - Right side: environment switcher dropdown + gear icon button
-  - Environment switcher: compact select-style button showing active environment name (or "No env" if none). Click opens a popover list of all environments from `GET /api/environments`. Click an env to activate via `PUT /api/environments/:name/active`. "New environment" option at bottom opens a modal (name input + key-value variable table).
-  - Gear icon: `<button>` with a settings/gear SVG icon. Click opens the Settings Panel (slide-in from right, already specified in T-017 but needs to be triggered from here).
-  - Popover closes on outside click or Escape key
 
 - [ ] **T-028** Auth tab - complete editor
   - Currently shows static "auth editor coming soon..." text

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import { fetchAuthProfiles, createAuthProfile } from '../api';
 interface RequestEditorProps {
   request: any;
   onFire: (req: any) => void;
@@ -27,6 +27,49 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
   };
   const removeAssertion = (index: number) => setAssertions(assertions.filter((_, i) => i !== index));
 
+    const [authType, setAuthType] = useState(request?.auth?.type || 'none');
+    const [authProfileId, setAuthProfileId] = useState(request?.authProfileId || '');
+    const [authCreds, setAuthCreds] = useState<any>(request?.auth?.credentials || {});
+    const [profiles, setProfiles] = useState<any[]>([]);
+
+    useEffect(() => {
+      fetchAuthProfiles().then(setProfiles).catch(console.error);
+    }, []);
+
+    const updateAuth = (type: string, creds: any, profileId: string) => {
+      setAuthType(type);
+      setAuthCreds(creds);
+      setAuthProfileId(profileId);
+    };
+
+    const handleSaveProfile = async () => {
+      const name = prompt('Name for this auth profile:');
+      if (!name) return;
+      try {
+        const newProf = await createAuthProfile({ name, type: authType, credentials: authCreds });
+        setProfiles([...profiles, newProf]);
+        updateAuth(authType, authCreds, newProf.id);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const handleFireWithAuth = () => {
+      const req = { ...request, method, url, assertions };
+      if (authProfileId) req.authProfileId = authProfileId;
+      else if (authType !== 'none') req.auth = { type: authType, credentials: authCreds };
+      else { delete req.authProfileId; delete req.auth; }
+      onFire(req);
+    };
+
+    const handleSaveWithAuth = () => {
+      const req = { ...request, method, url, assertions };
+      if (authProfileId) req.authProfileId = authProfileId;
+      else if (authType !== 'none') req.auth = { type: authType, credentials: authCreds };
+      else { delete req.authProfileId; delete req.auth; }
+      onSave(req);
+    };
+
   return (
     <div className="flex flex-col h-full bg-gray-900 border border-gray-800 rounded-md overflow-hidden">
       <div className="flex p-2 gap-2 border-b border-gray-800 bg-gray-950">
@@ -50,13 +93,13 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
         />
         <button 
           className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1 rounded text-sm font-semibold transition-colors"
-          onClick={() => onFire({ ...request, method, url, assertions })}
+          onClick={handleFireWithAuth}
         >
           Send
         </button>
         <button 
           className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1 rounded text-sm font-semibold transition-colors"
-          onClick={() => onSave({ ...request, method, url, assertions })}
+          onClick={handleSaveWithAuth}
         >
           Save
         </button>
@@ -66,7 +109,7 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
         {tabs.map(tab => (
           <button 
             key={tab}
-            className={`px-4 py-2 text-sm font-medium capitalize border-b-2 transition-colors \${activeTab === tab ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-gray-200'}`}
+            className={`px-4 py-2 text-sm font-medium capitalize border-b-2 transition-colors ${activeTab === tab ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-gray-200'}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
@@ -113,6 +156,145 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
               </div>
             ))}
             <button onClick={addAssertion} className="text-blue-400 text-sm hover:underline mt-2">+ Add Assertion</button>
+          </div>
+        ) : activeTab === 'auth' ? (
+          <div className="max-w-2xl">
+            <div className="mb-6 flex gap-4 items-center">
+              <label className="text-sm font-semibold text-gray-300 w-24">Profile</label>
+              <select 
+                className="flex-1 bg-gray-800 text-gray-200 border border-gray-700 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500"
+                value={authProfileId}
+                onChange={e => {
+                  const id = e.target.value;
+                  setAuthProfileId(id);
+                  if (id) {
+                    const prof = profiles.find(p => p.id === id);
+                    if (prof) {
+                      setAuthType(prof.type);
+                      setAuthCreds(prof.credentials);
+                    }
+                  } else {
+                    setAuthType('none');
+                    setAuthCreds({});
+                  }
+                }}
+              >
+                <option value="">Inline Auth (No Profile)</option>
+                {profiles.map(p => (
+                  <option key={p.id} value={p.id}>{p.name} ({p.type})</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-6 flex gap-4 items-center">
+              <label className="text-sm font-semibold text-gray-300 w-24">Auth Type</label>
+              <div className="flex gap-2">
+                {['none', 'bearer', 'apikey', 'basic'].map(t => (
+                  <button 
+                    key={t}
+                    disabled={!!authProfileId}
+                    className={`px-3 py-1 rounded text-sm capitalize transition-colors ${authType === t ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                    onClick={() => { setAuthType(t); setAuthCreds({}); }}
+                  >
+                    {t === 'apikey' ? 'API Key' : t}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-950 p-4 rounded border border-gray-800 space-y-4">
+              {authType === 'none' && <div className="text-sm text-gray-500 italic">This request does not use any authorization.</div>}
+              
+              {authType === 'bearer' && (
+                <div>
+                  <label className="block text-sm text-gray-400 mb-1">Token</label>
+                  <input 
+                    type="text" 
+                    disabled={!!authProfileId}
+                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white focus:border-blue-500"
+                    placeholder="e.g. {{login.response.body.token}}"
+                    value={authCreds.token || ''}
+                    onChange={e => setAuthCreds({ ...authCreds, token: e.target.value })}
+                  />
+                </div>
+              )}
+
+              {authType === 'apikey' && (
+                <>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-sm text-gray-400 mb-1">Key Name</label>
+                      <input 
+                        type="text" 
+                        disabled={!!authProfileId}
+                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white focus:border-blue-500"
+                        placeholder="X-API-Key"
+                        value={authCreds.keyName || 'X-API-Key'}
+                        onChange={e => setAuthCreds({ ...authCreds, keyName: e.target.value })}
+                      />
+                    </div>
+                    <div className="w-48">
+                      <label className="block text-sm text-gray-400 mb-1">Placement</label>
+                      <select 
+                        disabled={!!authProfileId}
+                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white focus:border-blue-500"
+                        value={authCreds.placement || 'header'}
+                        onChange={e => setAuthCreds({ ...authCreds, placement: e.target.value })}
+                      >
+                        <option value="header">Header</option>
+                        <option value="query">Query Param</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Value</label>
+                    <input 
+                      type="text" 
+                      disabled={!!authProfileId}
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white focus:border-blue-500"
+                      value={authCreds.value || ''}
+                      onChange={e => setAuthCreds({ ...authCreds, value: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
+
+              {authType === 'basic' && (
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm text-gray-400 mb-1">Username</label>
+                    <input 
+                      type="text" 
+                      disabled={!!authProfileId}
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white focus:border-blue-500"
+                      value={authCreds.username || ''}
+                      onChange={e => setAuthCreds({ ...authCreds, username: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-sm text-gray-400 mb-1">Password</label>
+                    <input 
+                      type="password" 
+                      disabled={!!authProfileId}
+                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white focus:border-blue-500"
+                      value={authCreds.password || ''}
+                      onChange={e => setAuthCreds({ ...authCreds, password: e.target.value })}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!authProfileId && authType !== 'none' && (
+              <div className="mt-4 flex justify-end">
+                <button 
+                  onClick={handleSaveProfile}
+                  className="bg-gray-800 hover:bg-gray-700 text-blue-400 border border-gray-700 hover:border-gray-600 px-3 py-1.5 rounded text-sm transition-colors"
+                >
+                  Save as Profile
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-gray-500 text-sm">

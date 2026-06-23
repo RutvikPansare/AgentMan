@@ -57,3 +57,19 @@ export async function deleteRequest(collectionName: string, requestName: string)
   if (!res.ok) throw new Error('Failed to delete request');
   return res.json();
 }
+
+export async function fetchAuthProfiles() {
+  const res = await fetch('/api/auth-profiles');
+  if (!res.ok) throw new Error('Failed to fetch auth profiles');
+  return res.json();
+}
+
+export async function createAuthProfile(profile: any) {
+  const res = await fetch('/api/auth-profiles', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(profile)
+  });
+  if (!res.ok) throw new Error('Failed to create auth profile');
+  return res.json();
+}

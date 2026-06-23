@@ -90,6 +90,33 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
     }
   });
 
+  app.get('/api/auth-profiles', async (req, res) => {
+    try {
+      const profiles = await context.authManager.listProfiles();
+      res.json(profiles);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.post('/api/auth-profiles', async (req, res) => {
+    try {
+      const profile = await context.authManager.createProfile(req.body);
+      res.json(profile);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  app.delete('/api/auth-profiles/:id', async (req, res) => {
+    try {
+      await context.authManager.deleteProfile(req.params.id);
+      res.json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   app.get('/api/environments', async (req, res) => {
     try {
       const envs = await context.environmentManager.listEnvironments();
