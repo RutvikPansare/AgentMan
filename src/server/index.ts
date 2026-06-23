@@ -8,6 +8,8 @@ import { execute as executeRequest } from '../engine/http-executor.js';
 import { startServer } from '../mcp/server.js';
 import { EngineContext } from '../mcp/tools/types.js';
 
+import { startExpressServer } from './express.js';
+
 async function main() {
   const cwd = process.cwd();
   
@@ -29,6 +31,7 @@ async function main() {
     lastResponseCache: new Map()
   };
 
+  startExpressServer(context);
   await startServer(context);
 }
 
