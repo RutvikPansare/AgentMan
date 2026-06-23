@@ -7,6 +7,7 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-23
+- [x] **T-009** MCP Server (`src/mcp/server.ts` + `src/mcp/tools/`)
 - [x] **T-008** Auth Manager (`src/engine/auth-manager.ts`)
 - [x] **T-007** Environment Manager (`src/engine/environment-manager.ts`)
 - [x] **T-006** Collection Manager (`src/engine/collection-manager.ts`)

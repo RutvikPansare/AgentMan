@@ -1,0 +1,22 @@
+import { describe, it, expect } from 'vitest';
+import { definition, handler } from './get-response.js';
+
+describe('get-response', () => {
+  it('should have correct definition', () => {
+    expect(definition.name).toBe('get_response');
+  });
+
+  it('should get cached response', async () => {
+    const mockContext: any = {
+      lastResponseCache: new Map([['R1', { status: 200 }]])
+    };
+    const res = await handler({ requestName: 'R1' }, mockContext);
+    expect(res.content[0].text).toContain('200');
+  });
+
+  it('should return error if not found', async () => {
+    const mockContext: any = { lastResponseCache: new Map() };
+    const res = await handler({ requestName: 'R2' }, mockContext);
+    expect(res.isError).toBe(true);
+  });
+});
