@@ -105,3 +105,5 @@ Thumbs.db
 
 # UI static build
 src/ui/dist
+
+example/

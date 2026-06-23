@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { fetchAuthProfiles, createAuthProfile } from '../api';
+import { KeyValueEditor } from './KeyValueEditor';
+import type { KeyValuePair } from './KeyValueEditor';
+
 interface RequestEditorProps {
   request: any;
   onFire: (req: any) => void;
@@ -7,17 +10,65 @@ interface RequestEditorProps {
 }
 
 export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
-  const [activeTab, setActiveTab] = useState('params');
-  const [url, setUrl] = useState(request?.url || '');
-  const [method, setMethod] = useState(request?.method || 'GET');
-
+  const tabs = ['params', 'headers', 'body', 'auth', 'assertions'];
+  
   if (!request) {
     return <div className="h-full flex items-center justify-center text-gray-500">Select a request to edit</div>;
   }
 
-  const tabs = ['params', 'headers', 'body', 'auth', 'assertions'];
+  const [activeTab, setActiveTab] = useState('params');
+  const [url, setUrl] = useState('');
+  const [method, setMethod] = useState('GET');
+  const [paramsList, setParamsList] = useState<KeyValuePair[]>([]);
+  const [headersList, setHeadersList] = useState<KeyValuePair[]>([]);
+  const [assertions, setAssertions] = useState<any[]>([]);
 
-  const [assertions, setAssertions] = useState<any[]>(request?.assertions || []);
+  const parseParams = (urlStr: string): KeyValuePair[] => {
+    const qIndex = urlStr.indexOf('?');
+    if (qIndex === -1) return [];
+    const qs = urlStr.slice(qIndex + 1);
+    if (!qs) return [];
+    return qs.split('&').map(p => {
+      const [k, v] = p.split('=');
+      return { key: decodeURIComponent(k || ''), value: decodeURIComponent(v || ''), enabled: true };
+    });
+  };
+
+  useEffect(() => {
+    if (request) {
+      setUrl(request.url || '');
+      setMethod(request.method || 'GET');
+      setParamsList(parseParams(request.url || ''));
+      
+      const hl: KeyValuePair[] = [];
+      if (request.headers) {
+        Object.entries(request.headers).forEach(([k, v]) => {
+          hl.push({ key: k, value: String(v), enabled: true });
+        });
+      }
+      setHeadersList(hl);
+      setAssertions(request.assertions || []);
+    }
+  }, [request]);
+
+  const updateUrlWithParams = (base: string, params: KeyValuePair[]) => {
+    const active = params.filter(p => p.enabled && (p.key || p.value));
+    if (active.length === 0) return base;
+    const qs = active.map(p => `${encodeURIComponent(p.key)}=${encodeURIComponent(p.value)}`).join('&');
+    return `${base}?${qs}`;
+  };
+
+  const handleUrlChange = (newUrl: string) => {
+    setUrl(newUrl);
+    setParamsList(parseParams(newUrl));
+  };
+
+  const handleParamsChange = (newParams: KeyValuePair[]) => {
+    setParamsList(newParams);
+    const qIndex = url.indexOf('?');
+    const base = qIndex === -1 ? url : url.slice(0, qIndex);
+    setUrl(updateUrlWithParams(base, newParams));
+  };
 
   const addAssertion = () => setAssertions([...assertions, { field: 'status', operator: 'eq', value: '' }]);
   const updateAssertion = (index: number, key: string, val: string) => {
@@ -54,8 +105,16 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
       }
     };
 
+    const getHeadersRecord = () => {
+      const hdrs: Record<string, string> = {};
+      headersList.forEach(h => {
+        if (h.enabled && h.key) hdrs[h.key] = h.value;
+      });
+      return Object.keys(hdrs).length > 0 ? hdrs : undefined;
+    };
+
     const handleFireWithAuth = () => {
-      const req = { ...request, method, url, assertions };
+      const req = { ...request, method, url, assertions, headers: getHeadersRecord() };
       if (authProfileId) req.authProfileId = authProfileId;
       else if (authType !== 'none') req.auth = { type: authType, credentials: authCreds };
       else { delete req.authProfileId; delete req.auth; }
@@ -63,7 +122,7 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
     };
 
     const handleSaveWithAuth = () => {
-      const req = { ...request, method, url, assertions };
+      const req = { ...request, method, url, assertions, headers: getHeadersRecord() };
       if (authProfileId) req.authProfileId = authProfileId;
       else if (authType !== 'none') req.auth = { type: authType, credentials: authCreds };
       else { delete req.authProfileId; delete req.auth; }
@@ -88,7 +147,7 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
           type="text" 
           className="flex-1 bg-gray-800 text-gray-200 border border-gray-700 rounded px-3 py-1 text-sm focus:outline-none focus:border-blue-500"
           value={url}
-          onChange={e => setUrl(e.target.value)}
+          onChange={e => handleUrlChange(e.target.value)}
           placeholder="https://api.example.com/v1/users"
         />
         <button 
@@ -118,7 +177,15 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 bg-gray-900">
-        {activeTab === 'assertions' ? (
+        {activeTab === 'params' ? (
+          <div className="py-2">
+            <KeyValueEditor pairs={paramsList} onChange={handleParamsChange} />
+          </div>
+        ) : activeTab === 'headers' ? (
+          <div className="py-2">
+            <KeyValueEditor pairs={headersList} onChange={setHeadersList} />
+          </div>
+        ) : activeTab === 'assertions' ? (
           <div className="space-y-2">
             {assertions.map((ass, i) => (
               <div key={i} className="flex items-center gap-2">
