@@ -5,6 +5,7 @@ import { RequestEditor } from './components/RequestEditor';
 import { ResponseViewer } from './components/ResponseViewer';
 import { EnvironmentSwitcher } from './components/EnvironmentSwitcher';
 import { SettingsPanel } from './components/SettingsPanel';
+import { PromptBar } from './components/PromptBar';
 
 function App() {
   const [showSettings, setShowSettings] = useState(false);
@@ -29,6 +30,7 @@ function App() {
           <ResponseViewer response={null} />
         </main>
       </div>
+      <PromptBar />
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
   );
