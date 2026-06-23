@@ -9,17 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-008** Auth Manager (`src/engine/auth-manager.ts`)
-  - Follow TDD: write `src/engine/auth-manager.test.ts` first
-  - `AuthManager` class - takes `configPath` (path to `~/.reqly/config.json`) in constructor
-  - `createProfile(profile: Omit<AuthProfile, 'id'>): Promise<AuthProfile>`
-  - `getProfile(id: string): Promise<AuthProfile>`
-  - `listProfiles(): Promise<AuthProfile[]>`
-  - `deleteProfile(id: string): Promise<void>`
-  - Stored in `~/.reqly/config.json` under `authProfiles` key
-  - Never logs or exposes credential values in error messages
-  - SOLID: auth storage only - no HTTP logic
-
 - [ ] **T-009** MCP Server (`src/mcp/server.ts` + `src/mcp/tools/`)
   - Follow TDD: write tool contract tests in `src/mcp/tools/*.test.ts` first - assert input schema, output shape
   - `src/mcp/server.ts`: initialise `McpServer` from `@modelcontextprotocol/sdk`, register all 7 tools, connect stdio transport
