@@ -1,7 +1,7 @@
-# AgentMan Architecture
+# Reqly Architecture
 
 ## Overview
-AgentMan is composed of two primary interfaces sharing a single core engine:
+Reqly is composed of two primary interfaces sharing a single core engine:
 1. **MCP Server (stdio)**: Used by AI coding agents.
 2. **Localhost Web UI**: Used by humans at `localhost:4242`.
 
@@ -19,5 +19,5 @@ AgentMan is composed of two primary interfaces sharing a single core engine:
 - `src/types/` - Shared TypeScript types
 
 ## Data Storage
-- **Collections:** Stored as YAML files in `.agentman/` within the user's project directory.
-- **Global Config:** Stored in `~/.agentman/config.json` (for BYOK keys, etc.).
+- **Collections:** Stored as YAML files in `.reqly/` within the user's project directory.
+- **Global Config:** Stored in `~/.reqly/config.json` (for BYOK keys, etc.).

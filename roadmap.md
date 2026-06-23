@@ -1,4 +1,4 @@
-# AgentMan - Roadmap
+# Reqly - Roadmap
 
 Horizons: **Now** = active focus · **Next** = queued · **Later** = on the radar.
 When a milestone becomes the focus, break it into `T-NNN` tasks in `docs/todo.md` tagged with the milestone name.
@@ -10,7 +10,7 @@ When a milestone becomes the focus, break it into `T-NNN` tasks in `docs/todo.md
 **Goal:** A working local execution engine with an MCP interface that AI agents (Cursor, Claude Code) can use immediately. No UI yet. Pure capability.
 
 - [ ] **HTTP Executor** - Fire GET, POST, PUT, PATCH, DELETE requests. Handle headers, body (JSON, form, raw), query params. Return status, response body, latency, headers.
-- [ ] **Collection Manager** - Create and manage collections as YAML files in `.agentman/collections/`. Each collection is a folder, each request is a file. Full CRUD.
+- [ ] **Collection Manager** - Create and manage collections as YAML files in `.reqly/collections/`. Each collection is a folder, each request is a file. Full CRUD.
 - [ ] **Environment Manager** - Named environments (dev, staging, prod) with variable sets. `{{baseUrl}}`, `{{apiKey}}` substituted at request time. Active environment set per-session.
 - [ ] **Auth Manager** - Store auth profiles: Bearer token, API key (header or query param), Basic auth. Profiles attach to collections or individual requests.
 - [ ] **MCP Server** - Expose these 7 tools to agents via stdio transport:
@@ -32,14 +32,14 @@ When a milestone becomes the focus, break it into `T-NNN` tasks in `docs/todo.md
 - [ ] **Request Editor** - Method dropdown, URL bar, tabs for Headers / Body / Auth / Params. Pre-filled from saved request, editable before firing.
 - [ ] **Response Viewer** - Status code, latency, response body (JSON pretty-printed), response headers. Copy button. Save response as example.
 - [ ] **Environment Switcher** - Dropdown in top bar. Switch between dev/staging/prod instantly.
-- [ ] **Settings Panel** - BYOK API key input stored in `~/.agentman/config.json`. Model selector (GPT-4o, Claude, etc.). Never stored in the repo.
+- [ ] **Settings Panel** - BYOK API key input stored in `~/.reqly/config.json`. Model selector (GPT-4o, Claude, etc.). Never stored in the repo.
 - [ ] **Prompt Bar** - Text input. User describes what they want. Sends to LLM with their API key. LLM calls MCP tools. Result appears in the UI. Zero AI cost on our side.
 
 ---
 
 ## M3 - Later: Differentiators
 
-**Goal:** Features that make AgentMan genuinely better than Postman or Bruno for the AI-native developer. Auto-capture is the most important - it removes all manual work.
+**Goal:** Features that make Reqly genuinely better than Postman or Bruno for the AI-native developer. Auto-capture is the most important - it removes all manual work.
 
 - [ ] **Auto-Capture Proxy** - Local proxy between the dev's app and the internet. Watches HTTP traffic, auto-builds collection entries from real calls. Zero manual request writing. Core wedge for User B (frontend/fullstack devs calling third-party APIs).
 - [ ] **Request Chaining** - Use values from one response in the next request. `{{login.response.token}}` auto-populates auth headers downstream. Essential for real-world multi-step flows.
@@ -52,7 +52,7 @@ When a milestone becomes the focus, break it into `T-NNN` tasks in `docs/todo.md
 
 **Goal:** Distribution, collaboration, and the features that convert free users to paid.
 
-- [ ] **CLI Runner** - `agentman run <collection>` for CI/CD pipelines without the UI. Exit code 1 on failures.
+- [ ] **CLI Runner** - `reqly run <collection>` for CI/CD pipelines without the UI. Exit code 1 on failures.
 - [ ] **Import from Postman/Bruno** - Import existing collections instantly. Removes friction for developers switching from other tools.
 - [ ] **Cloud Sync** - Optional: sync collections across machines and teammates. First paid tier. Collections stay local by default.
 - [ ] **Response Diffing** - Show what changed between the last run and this run. Detect silent API contract changes.

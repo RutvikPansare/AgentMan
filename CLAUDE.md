@@ -1,23 +1,23 @@
-# AgentMan
+# Reqly
 
 > **Keep CLAUDE.md and GEMINI.md in sync.** These two files mirror the same project rules for different AI agents. When you change a shared section in one (repo structure, roadmap, project management, testing, ways of working, living docs, general rules), apply the same change to the other in the same commit.
 
-## What AgentMan is
+## What Reqly is
 
-AgentMan is a prompt-first, agent-native API client. It is a local background service that developers install once and run alongside their projects. It exposes two interfaces from the same engine:
+Reqly is a prompt-first, agent-native API client. It is a local background service that developers install once and run alongside their projects. It exposes two interfaces from the same engine:
 
-1. **MCP server (stdio)** - AI coding agents (Cursor, Claude Code, Windsurf) call AgentMan's tools directly to fire requests, manage collections, and verify API behaviour. Zero UI, zero LLM cost on our side.
+1. **MCP server (stdio)** - AI coding agents (Cursor, Claude Code, Windsurf) call Reqly's tools directly to fire requests, manage collections, and verify API behaviour. Zero UI, zero LLM cost on our side.
 2. **Localhost web UI** - Humans open `localhost:4242` to browse collections, run requests visually, and use a prompt bar (BYOK) to describe what they want. The LLM is the user's own, on their own API key.
 
-Collections are stored as YAML files in `.agentman/` inside the user's project directory. They live alongside the code and travel with the repo via git.
+Collections are stored as YAML files in `.reqly/` inside the user's project directory. They live alongside the code and travel with the repo via git.
 
-AgentMan does not host AI. It is an execution engine with an MCP interface. The intelligence always lives in the user's AI agent or their own API key.
+Reqly does not host AI. It is an execution engine with an MCP interface. The intelligence always lives in the user's AI agent or their own API key.
 
 ## How this repo is organized
 
 | File | What it's for |
 |------|---------------|
-| `knowledge.md` | What AgentMan is, target users, principles. Slow-moving reference. |
+| `knowledge.md` | What Reqly is, target users, principles. Slow-moving reference. |
 | `roadmap.md` | Milestones and current focus. Single source of truth for direction. |
 | `docs/todo.md` | **Queued tasks. Read before starting any planned work.** |
 | `docs/done.md` | Archive of completed tasks. Append-only history. |
@@ -69,14 +69,14 @@ When we make a non-obvious product or architecture call, append it to `docs/deci
 
 **Read this before writing any feature.**
 
-AgentMan is an execution engine, not an AI product. The AI always lives outside AgentMan - in the user's Cursor, their Claude Code, or their own BYOK API key. AgentMan's job is to expose reliable, well-typed tools that any AI agent can call.
+Reqly is an execution engine, not an AI product. The AI always lives outside Reqly - in the user's Cursor, their Claude Code, or their own BYOK API key. Reqly's job is to expose reliable, well-typed tools that any AI agent can call.
 
 This means:
 
 - **Every capability must be a tool first.** If it can't be called via MCP, it doesn't exist as a feature. The localhost UI is a visual wrapper around the same tools - it never has capabilities the MCP interface doesn't have.
 - **No AI logic inside the engine.** The server fires HTTP requests and manages YAML files. It does not call any LLM. The only LLM calls in the codebase are in the UI's prompt bar, which forwards to the user's own API key.
 - **Collections are plain text.** YAML files, human-readable, git-diffable. Never a proprietary binary format or a database-only format. A developer must be able to read, edit, and commit a collection with a text editor.
-- **BYOK is non-negotiable.** The user's API key is stored in `~/.agentman/config.json` on their machine. It is never sent to our servers, never logged, never stored in the repo.
+- **BYOK is non-negotiable.** The user's API key is stored in `~/.reqly/config.json` on their machine. It is never sent to our servers, never logged, never stored in the repo.
 
 If you find yourself writing LLM logic into the server, a cron job, or a route handler - stop. The server is dumb by design. Keep it that way.
 
@@ -86,10 +86,10 @@ If you find yourself writing LLM logic into the server, a cron job, or a route h
 - **Local server:** Express or Fastify serving the MCP stdio interface and the localhost web UI
 - **UI:** React (served as static build from the local server at `localhost:4242`)
 - **Styling:** Tailwind CSS
-- **Collection format:** YAML files in `.agentman/` in the user's project directory
+- **Collection format:** YAML files in `.reqly/` in the user's project directory
 - **MCP SDK:** `@modelcontextprotocol/sdk` - handles stdio transport, tool registration, schema validation
 - **HTTP client:** `undici` or native `fetch` for firing user API requests
-- **Config storage:** `~/.agentman/config.json` for global settings (BYOK key, model preference)
+- **Config storage:** `~/.reqly/config.json` for global settings (BYOK key, model preference)
 - **Test framework:** Vitest
   - Run all tests: `npm test`
   - Single file: `npx vitest run src/lib/example.test.ts`
