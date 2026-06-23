@@ -7,6 +7,7 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-23
+- [x] **T-003** Shared TypeScript types (`src/types/`)
 - [x] **T-002** Project scaffold
 - [x] **T-001** Rename: AgentMan -> Reqly (all doc references updated)
 - [x] **T-000** Initial project setup and roadmap definition.

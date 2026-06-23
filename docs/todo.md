@@ -9,15 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-003** Shared TypeScript types (`src/types/`)
-  - `src/types/request.ts`: `HttpMethod`, `RequestConfig` (method, url, headers, body, params, authProfileId, environmentId)
-  - `src/types/collection.ts`: `Collection` (name, description, requests), `CollectionRequest` (extends RequestConfig + id, name)
-  - `src/types/environment.ts`: `Environment` (id, name, variables: Record<string, string>), `EnvironmentStore`
-  - `src/types/auth.ts`: `AuthType` enum (bearer, apiKey, basic), `AuthProfile` (id, name, type, credentials)
-  - `src/types/response.ts`: `HttpResponse` (status, body, headers, latency, requestId, timestamp)
-  - `src/types/index.ts`: barrel export of all types
-  - Write types only - no implementation. TDD does not apply to pure type files.
-
 - [ ] **T-004** HTTP Executor (`src/engine/http-executor.ts`)
   - Follow TDD: write `src/engine/http-executor.test.ts` first
   - `execute(config: RequestConfig, env?: Environment, auth?: AuthProfile): Promise<HttpResponse>`
