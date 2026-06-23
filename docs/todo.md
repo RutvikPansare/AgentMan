@@ -9,10 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-011** Setup UI Project Scaffold (React + Tailwind CSS) (`src/ui/`)
-  - Use Vite to initialize a React+TS project inside `src/ui/`
-  - Configure Tailwind CSS
-  - Basic app layout skeleton
 - [ ] **T-012** Express Server & UI Serving (`src/server/server.ts`)
   - Create an Express server listening on `localhost:4242`
   - Serve the static build of the UI
