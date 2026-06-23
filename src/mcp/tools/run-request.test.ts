@@ -14,10 +14,10 @@ describe('run-request', () => {
       environmentManager: { getActiveEnvironment: async () => null },
       authManager: { getProfile: async () => null },
       executeRequest: async () => ({ status: 200 }),
-      lastResponseCache: new Map()
+      responseStore: { set: vi.fn(), get: () => undefined }
     };
     const res = await handler({ collectionName: 'C', requestName: 'Req1' }, mockContext);
     expect(res.content[0].text).toContain('200');
-    expect(mockContext.lastResponseCache.get('Req1')).toEqual({ status: 200 });
+    expect(mockContext.responseStore.set).toHaveBeenCalledWith('Req1', { status: 200 });
   });
 });

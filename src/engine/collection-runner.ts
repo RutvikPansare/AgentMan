@@ -53,8 +53,12 @@ export class CollectionRunner {
           auth = await this.context.authManager.getProfile(request.authProfileId);
         }
 
-        response = await this.context.executeRequest(request, options.environment, auth);
-        this.context.lastResponseCache.set(request.name, response);
+        const { substituteConfig } = await import('./variable-substitutor.js');
+        const vars = options.environment ? options.environment.variables : {};
+        const config = substituteConfig(request, vars, this.context.responseStore);
+
+        response = await this.context.executeRequest(config, options.environment, auth);
+        this.context.responseStore.set(request.name, response);
 
         if (request.assertions && request.assertions.length > 0) {
           assertionResults = runAssertions(response, request.assertions);

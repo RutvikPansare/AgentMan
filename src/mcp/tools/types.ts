@@ -2,6 +2,7 @@ import { CollectionManager } from '../../engine/collection-manager.js';
 import { EnvironmentManager } from '../../engine/environment-manager.js';
 import { AuthManager } from '../../engine/auth-manager.js';
 import { ProxyServer } from '../../engine/proxy.js';
+import { ResponseStore } from '../../engine/response-store.js';
 import { HttpResponse, CollectionRequest, Environment, AuthProfile } from '../../types/index.js';
 
 export interface EngineContext {
@@ -9,7 +10,7 @@ export interface EngineContext {
   environmentManager: EnvironmentManager;
   authManager: AuthManager;
   proxyServer: ProxyServer;
-  lastResponseCache: Map<string, HttpResponse>;
+  responseStore: ResponseStore;
   executeRequest: (req: CollectionRequest, env?: Environment, auth?: AuthProfile) => Promise<HttpResponse>;
 }
 

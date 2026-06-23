@@ -32,7 +32,7 @@ export async function handler(args: any, context: EngineContext): Promise<ToolHa
     }
     
     // Store in cache
-    context.lastResponseCache.set(req.name, res);
+    context.responseStore.set(req.name, res);
 
     return { content: [{ type: 'text', text: JSON.stringify({ response: res, assertions: assertionsResult }) }] };
   } catch (e: any) {

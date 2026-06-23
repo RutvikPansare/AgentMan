@@ -117,7 +117,14 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
         auth = await context.authManager.getProfile(req.body.request.authProfileId);
       }
 
-      const response = await context.executeRequest(req.body.request, env, auth);
+      // Add responseStore to request config substitute call before execution
+      // Wait, we need to substitute config using responseStore
+      const { substituteConfig } = await import('../engine/variable-substitutor.js');
+      const vars = env ? env.variables : {};
+      const config = substituteConfig(req.body.request, vars, context.responseStore);
+
+      const response = await context.executeRequest(config, env, auth);
+      context.responseStore.set(req.body.request.name, response);
       
       const { runAssertions } = await import('../engine/assertion-runner.js');
       let assertions: any[] = [];

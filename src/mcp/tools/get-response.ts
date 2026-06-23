@@ -13,7 +13,7 @@ export const definition: ToolDefinition = {
 };
 
 export async function handler(args: any, context: EngineContext): Promise<ToolHandlerResult> {
-  const res = context.lastResponseCache.get(args.requestName);
+  const res = context.responseStore.get(args.requestName);
   if (!res) {
     return { content: [{ type: 'text', text: `No cached response found for ${args.requestName}` }], isError: true };
   }

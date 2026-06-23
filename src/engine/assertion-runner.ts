@@ -1,6 +1,6 @@
 import { Assertion, AssertionResult, HttpResponse } from '../types/index.js';
 
-function extractBodyValue(body: unknown, path?: string): unknown {
+export function extractBodyValue(body: unknown, path?: string): unknown {
   if (!path || typeof body !== 'object' || body === null) return body;
   const parts = path.split('.');
   let current: any = body;
