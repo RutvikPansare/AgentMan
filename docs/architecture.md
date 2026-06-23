@@ -1,88 +1,23 @@
-# Tellero Architecture
+# AgentMan Architecture
 
-## Frontend
+## Overview
+AgentMan is composed of two primary interfaces sharing a single core engine:
+1. **MCP Server (stdio)**: Used by AI coding agents.
+2. **Localhost Web UI**: Used by humans at `localhost:4242`.
 
-Stack:
-- Next.js
-- TypeScript
-- Tailwind
-- shadcn/ui
+## Tech Stack
+- **Backend:** Node.js, TypeScript, Express/Fastify
+- **Frontend:** React, Tailwind CSS
+- **MCP SDK:** `@modelcontextprotocol/sdk`
+- **Testing:** Vitest
 
-## Backend
+## Directory Structure
+- `src/server/` - Express/Fastify server, MCP server, tool handlers
+- `src/engine/` - HTTP executor, collection manager, environment manager, auth manager
+- `src/ui/` - React application
+- `src/mcp/` - MCP tool definitions and schemas
+- `src/types/` - Shared TypeScript types
 
-Stack:
-- Supabase
-- PostgreSQL
-- Edge Functions
-
-## Core Modules
-
-### Inbox
-
-Stores:
-- Conversations
-- Messages
-- Assignments
-
-### Segments
-
-Stores:
-- Rules
-- Conditions
-- Saved Segments
-
-### Broadcasts
-
-Stores:
-- Campaigns
-- Recipients
-- Delivery Results
-
-### Automations
-
-Stores:
-- Automation Configurations
-- Triggers
-- Message Templates
-
-## Variable Mapping Strategy
-
-Store mappings per:
-
-automation_type + template_id
-
-Example:
-
-COD Confirmation
-  Template A
-  Template B
-
-Winback
-  Template A
-  Template B
-
-Benefits:
-- Restores mappings automatically
-- No repeated configuration
-
-## Commerce Layer
-
-Normalized tables:
-
-commerce_customers
-commerce_orders
-commerce_order_items
-
-platform_type:
-- shopify
-- woocommerce
-
-## Future AI Layer
-
-Knowledge Base
-↓
-Retrieval
-↓
-Gemini Flash
-↓
-Inbox
+## Data Storage
+- **Collections:** Stored as YAML files in `.agentman/` within the user's project directory.
+- **Global Config:** Stored in `~/.agentman/config.json` (for BYOK keys, etc.).
