@@ -22,6 +22,7 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
   const [paramsList, setParamsList] = useState<KeyValuePair[]>([]);
   const [headersList, setHeadersList] = useState<KeyValuePair[]>([]);
   const [assertions, setAssertions] = useState<any[]>([]);
+  const [bodyText, setBodyText] = useState('');
 
   const parseParams = (urlStr: string): KeyValuePair[] => {
     const qIndex = urlStr.indexOf('?');
@@ -48,6 +49,12 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
       }
       setHeadersList(hl);
       setAssertions(request.assertions || []);
+
+      if (request.body) {
+        setBodyText(typeof request.body === 'object' ? JSON.stringify(request.body, null, 2) : String(request.body));
+      } else {
+        setBodyText('');
+      }
     }
   }, [request]);
 
@@ -113,8 +120,17 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
       return Object.keys(hdrs).length > 0 ? hdrs : undefined;
     };
 
+    const getParsedBody = () => {
+      if (!bodyText.trim()) return undefined;
+      try {
+        return JSON.parse(bodyText);
+      } catch {
+        return bodyText;
+      }
+    };
+
     const handleFireWithAuth = () => {
-      const req = { ...request, method, url, assertions, headers: getHeadersRecord() };
+      const req = { ...request, method, url, assertions, headers: getHeadersRecord(), body: getParsedBody() };
       if (authProfileId) req.authProfileId = authProfileId;
       else if (authType !== 'none') req.auth = { type: authType, credentials: authCreds };
       else { delete req.authProfileId; delete req.auth; }
@@ -122,7 +138,7 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
     };
 
     const handleSaveWithAuth = () => {
-      const req = { ...request, method, url, assertions, headers: getHeadersRecord() };
+      const req = { ...request, method, url, assertions, headers: getHeadersRecord(), body: getParsedBody() };
       if (authProfileId) req.authProfileId = authProfileId;
       else if (authType !== 'none') req.auth = { type: authType, credentials: authCreds };
       else { delete req.authProfileId; delete req.auth; }
@@ -184,6 +200,31 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
         ) : activeTab === 'headers' ? (
           <div className="py-2">
             <KeyValueEditor pairs={headersList} onChange={setHeadersList} />
+          </div>
+        ) : activeTab === 'body' ? (
+          <div className="flex flex-col h-full gap-2">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-sm font-semibold text-gray-400">Raw Body</span>
+              <button 
+                onClick={() => {
+                  try {
+                    setBodyText(JSON.stringify(JSON.parse(bodyText), null, 2));
+                  } catch {
+                    alert('Invalid JSON - could not format.');
+                  }
+                }}
+                className="text-xs text-blue-400 hover:text-blue-300 px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 transition-colors"
+              >
+                Format JSON
+              </button>
+            </div>
+            <textarea 
+              className="flex-1 bg-gray-950 border border-gray-800 rounded p-3 text-sm text-gray-300 font-mono focus:outline-none focus:border-blue-500 resize-none whitespace-pre"
+              placeholder="Enter JSON, XML, or raw text here..."
+              value={bodyText}
+              onChange={e => setBodyText(e.target.value)}
+              spellCheck={false}
+            />
           </div>
         ) : activeTab === 'assertions' ? (
           <div className="space-y-2">
