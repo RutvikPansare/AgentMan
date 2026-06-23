@@ -9,10 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-018** Prompt Bar Component
-  - Text input for user prompts
-  - Logic to send to LLM (using BYOK API key)
-  - LLM calls MCP tools, result updates UI
 
 ## Backlog
 
