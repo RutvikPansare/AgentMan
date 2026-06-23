@@ -10,6 +10,11 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
   app.use(cors());
   app.use(express.json());
 
+  app.use((req, res, next) => {
+    console.error(`[Express] Received request: ${req.method} ${req.path}`);
+    next();
+  });
+
   // Engine API Routes
   app.post('/api/proxy/start', async (req, res) => {
     try {
@@ -226,8 +231,12 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
   const uiBuildPath = path.join(process.cwd(), 'src', 'ui', 'dist');
   app.use(express.static(uiBuildPath));
 
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(uiBuildPath, 'index.html'));
+  app.use((req, res) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api/')) {
+      res.sendFile(path.join(uiBuildPath, 'index.html'));
+    } else {
+      res.status(404).json({ error: 'Not found' });
+    }
   });
 
   app.listen(port, () => {
