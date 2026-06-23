@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchCollections, fetchEnvironments } from '../api';
 import { CapturePanel } from './CapturePanel';
 
-export function Sidebar() {
+export function Sidebar({ onRunCollection }: { onRunCollection: (name: string) => void }) {
   const [collections, setCollections] = useState<any[]>([]);
   const [environments, setEnvironments] = useState<any>(null);
 
@@ -29,7 +29,16 @@ export function Sidebar() {
         <div className="space-y-2">
           {collections.map(col => (
             <div key={col.name}>
-              <div className="text-sm font-semibold text-gray-300 pb-1">{col.name}</div>
+              <div className="flex items-center justify-between group">
+                <div className="text-sm font-semibold text-gray-300 pb-1">{col.name}</div>
+                <button 
+                  className="opacity-0 group-hover:opacity-100 text-blue-400 hover:text-blue-300 transition-opacity px-2"
+                  title="Run Collection"
+                  onClick={() => onRunCollection(col.name)}
+                >
+                  ▶
+                </button>
+              </div>
               <ul className="pl-4 border-l border-gray-800 space-y-1">
                 {col.requests.map((req: any) => (
                   <li key={req.name} className="text-sm text-gray-400 hover:text-white cursor-pointer py-1">

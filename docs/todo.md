@@ -13,13 +13,7 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 
 
-- [ ] **T-023** UI: Assertions editor
-  - New tab in the Request Editor: "Assertions" (after Headers/Body/Auth/Params)
-  - List of assertion rows: each row has field dropdown (`status` / `body.<path>` / `latency`) + operator dropdown (`equals` / `not equals` / `contains` / `less than` / `greater than`) + value input
-  - "Add assertion" button appends a new empty row
-  - Delete button (trash icon) on each row
-  - Saved as part of the request via `PUT /api/collections/:name/requests/:requestName`
-  - After a request is sent, assertion results appear inline in the Response Viewer below the status badge: green tick or red cross per assertion with the actual vs expected message
+
 
 - [ ] **T-024** UI: Collection Runner panel
   - "Run collection" button in the sidebar next to each collection name (play icon)

@@ -6,11 +6,13 @@ import { ResponseViewer } from './components/ResponseViewer';
 import { EnvironmentSwitcher } from './components/EnvironmentSwitcher';
 import { SettingsPanel } from './components/SettingsPanel';
 import { PromptBar } from './components/PromptBar';
+import { CollectionRunnerPanel } from './components/CollectionRunnerPanel';
 
 function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [activeRequest, setActiveRequest] = useState<any>({ name: 'New Request', method: 'GET', url: 'https://jsonplaceholder.typicode.com/todos/1' });
   const [response, setResponse] = useState<any>(null);
+  const [runningCollection, setRunningCollection] = useState<string | null>(null);
 
   const handleFire = async (req: any) => {
     try {
@@ -31,7 +33,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
       <header className="h-14 border-b border-gray-800 bg-gray-950 flex items-center justify-between px-4 shrink-0">
         <h1 className="font-semibold tracking-wide">Reqly</h1>
         <div className="flex items-center gap-4">
@@ -41,7 +43,7 @@ function App() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-64 border-r border-gray-800 bg-gray-900 overflow-y-auto">
-          <Sidebar />
+          <Sidebar onRunCollection={setRunningCollection} />
         </aside>
         <main className="flex-1 bg-gray-950 overflow-y-auto p-4 flex flex-col gap-4">
           <div className="h-1/2 min-h-[300px]">
@@ -52,9 +54,11 @@ function App() {
       </div>
       <PromptBar />
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      {runningCollection && (
+        <CollectionRunnerPanel collectionName={runningCollection} onClose={() => setRunningCollection(null)} />
+      )}
     </div>
   );
 }
-
 
 export default App;

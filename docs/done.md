@@ -7,6 +7,7 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-23
+- [x] **T-023** UI: Assertions editor
 - [x] **T-022** UI: Proxy capture panel
 - [x] **T-021** Collection Runner (`src/engine/collection-runner.ts`)
 - [x] **T-020** Auto-Capture Proxy (`src/engine/proxy.ts`)
