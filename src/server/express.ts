@@ -168,7 +168,7 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
   const uiBuildPath = path.join(process.cwd(), 'src', 'ui', 'dist');
   app.use(express.static(uiBuildPath));
 
-  app.get('*', (req, res) => {
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(uiBuildPath, 'index.html'));
   });
 

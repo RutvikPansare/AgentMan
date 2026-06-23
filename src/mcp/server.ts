@@ -25,6 +25,25 @@ const tools = [
   stopProxy
 ];
 
+import { z } from 'zod';
+
+function convertSchemaToZodShape(schema: any) {
+  if (!schema || !schema.properties) return {};
+  const shape: any = {};
+  for (const [k, v] of Object.entries(schema.properties)) {
+    let zType: any = z.any();
+    if ((v as any).type === 'string') zType = z.string();
+    else if ((v as any).type === 'number') zType = z.number();
+    else if ((v as any).type === 'boolean') zType = z.boolean();
+    
+    if (schema.required && !schema.required.includes(k)) {
+      zType = zType.optional();
+    }
+    shape[k] = zType;
+  }
+  return shape;
+}
+
 export function createServer(context: EngineContext) {
   const server = new McpServer({
     name: 'Reqly',
@@ -32,7 +51,8 @@ export function createServer(context: EngineContext) {
   });
 
   for (const t of tools) {
-    server.tool(t.definition.name, t.definition.description, t.definition.inputSchema.properties, async (args: any) => {
+    const shape = convertSchemaToZodShape(t.definition.inputSchema);
+    server.tool(t.definition.name, t.definition.description, shape, async (args: any) => {
       return await t.handler(args, context);
     });
   }
