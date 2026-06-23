@@ -2,6 +2,7 @@
 
 import { Sidebar } from './components/Sidebar';
 import { RequestEditor } from './components/RequestEditor';
+import { ResponseViewer } from './components/ResponseViewer';
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           <div className="h-1/2 min-h-[300px]">
             <RequestEditor request={{ name: 'New Request', method: 'GET', url: '' }} onFire={() => {}} onSave={() => {}} />
           </div>
-          {/* Response Viewer */}
+          <ResponseViewer response={null} />
         </main>
       </div>
     </div>
