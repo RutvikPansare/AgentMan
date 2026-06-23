@@ -1,0 +1,5 @@
+name: pickachu
+method: GET
+url: https://api.abc.com
+_collection: test
+assertions: []

@@ -13,11 +13,13 @@ import { EngineContext } from '../mcp/tools/types.js';
 import { startExpressServer } from './express.js';
 
 async function main() {
-  const reqlyDir = path.join(os.homedir(), '.reqly');
-  const collectionsDir = path.join(reqlyDir, 'collections');
-  const environmentsPath = path.join(reqlyDir, 'environments.yaml');
+  const globalReqlyDir = path.join(os.homedir(), '.reqly');
+  const projectReqlyDir = path.join(process.cwd(), '.reqly');
+
+  const collectionsDir = projectReqlyDir;
+  const environmentsPath = path.join(projectReqlyDir, 'environments.yaml');
   
-  const globalConfigPath = path.join(reqlyDir, 'config.json');
+  const globalConfigPath = path.join(globalReqlyDir, 'config.json');
 
   const collectionManager = new CollectionManager(collectionsDir);
   const environmentManager = new EnvironmentManager(environmentsPath);

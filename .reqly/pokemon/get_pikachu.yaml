@@ -1,0 +1,3 @@
+method: GET
+name: get_pikachu
+url: https://pokeapi.co/api/v2/pokemon/pikachu

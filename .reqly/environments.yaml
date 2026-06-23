@@ -1,0 +1,9 @@
+environments:
+  - id: env-1782249017754-gcaljye4q
+    name: test
+    variables:
+      clientid: '1234'
+  - id: env-1782252017631-iey5r7w48
+    name: prod
+    variables: {}
+active: test

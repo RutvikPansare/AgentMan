@@ -7,6 +7,9 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-23
+- [x] **T-033** Add multiple tabs feature to the UI
+- [x] **T-032** Fix server hang by cleaning up dangling Node processes on port 4242
+- [x] **T-031** Fix CLI collection path and UI static asset resolution
 - [x] **T-025** Request Chaining - response context store
 - [x] **T-024** UI: Collection Runner panel
 - [x] **T-023** UI: Assertions editor

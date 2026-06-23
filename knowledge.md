@@ -22,7 +22,7 @@ Reqly is an execution engine, not an AI product. The AI always lives outside Req
 ## What's Built
 - **Core Engine:** HTTP execution, Collection Management (YAML), Environment substitution, Auth profiles.
 - **MCP Server:** Tools to create, list, run requests/collections, and manage proxy.
-- **Local UI:** Sidebar for collections/environments, Request Editor with params/headers/body/auth/assertions, Response Viewer with syntax highlighting and assertions results, Settings panel, Prompt bar.
+- **Local UI:** Sidebar for collections/environments, Request Editor with params/headers/body/auth/assertions, Response Viewer with syntax highlighting and assertions results, Settings panel, Prompt bar, Multiple Tabs support for parallel editing.
 - **Differentiators:** 
   - **Auto-Capture Proxy:** Captures live traffic and saves requests.
   - **Test Assertions:** Verify response status, latency, and JSON body paths.

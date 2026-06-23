@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { updateRequest } from './api';
 import { Sidebar } from './components/Sidebar';
@@ -9,16 +8,56 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { PromptBar } from './components/PromptBar';
 import { CollectionRunnerPanel } from './components/CollectionRunnerPanel';
 
+interface TabData {
+  id: string;
+  request: any;
+  response: any;
+  isSending: boolean;
+}
+
 function App() {
   const [showSettings, setShowSettings] = useState(false);
-  const [activeRequest, setActiveRequest] = useState<any>({ name: 'New Request', method: 'GET', url: 'https://jsonplaceholder.typicode.com/todos/1' });
-  const [response, setResponse] = useState<any>(null);
+  
+  const [tabs, setTabs] = useState<TabData[]>([
+    {
+      id: 'default',
+      request: { name: 'New Request', method: 'GET', url: 'https://jsonplaceholder.typicode.com/todos/1' },
+      response: null,
+      isSending: false
+    }
+  ]);
+  const [activeTabId, setActiveTabId] = useState<string>('default');
   const [runningCollection, setRunningCollection] = useState<string | null>(null);
 
-  const [isSending, setIsSending] = useState(false);
+  const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
 
-  const handleFire = async (req: any) => {
-    setIsSending(true);
+  const updateTab = (id: string, updates: Partial<TabData>) => {
+    setTabs(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+  };
+
+  const closeTab = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (tabs.length === 1) {
+      // Don't close the last tab, just reset it
+      setTabs([{
+        id: 'default-' + Date.now(),
+        request: { name: 'New Request', method: 'GET', url: '' },
+        response: null,
+        isSending: false
+      }]);
+      setActiveTabId('default-' + Date.now());
+      return;
+    }
+    
+    const newTabs = tabs.filter(t => t.id !== id);
+    if (activeTabId === id) {
+      setActiveTabId(newTabs[newTabs.length - 1].id);
+    }
+    setTabs(newTabs);
+  };
+
+  const handleFire = async (req: any, tabId: string) => {
+    updateTab(tabId, { isSending: true });
     try {
       const res = await fetch('/api/run/adhoc', {
         method: 'POST',
@@ -27,15 +66,37 @@ function App() {
       });
       const data = await res.json();
       if (data.response) {
-        setResponse({ ...data.response, assertions: data.assertions, previousResponse: data.previousResponse });
+        updateTab(tabId, { response: { ...data.response, assertions: data.assertions, previousResponse: data.previousResponse } });
       } else {
-        setResponse({ status: 500, latency: 0, body: data.error, headers: {} });
+        updateTab(tabId, { response: { status: 500, latency: 0, body: data.error, headers: {} } });
       }
     } catch (e: any) {
-      setResponse({ status: 500, latency: 0, body: e.message, headers: {} });
+      updateTab(tabId, { response: { status: 500, latency: 0, body: e.message, headers: {} } });
     } finally {
-      setIsSending(false);
+      updateTab(tabId, { isSending: false });
     }
+  };
+
+  const handleSelectRequestFromSidebar = (req: any, col: string) => {
+    const tabId = `${col}-${req.name}`;
+    const existing = tabs.find(t => t.id === tabId);
+    if (existing) {
+      setActiveTabId(tabId);
+    } else {
+      setTabs([...tabs, { id: tabId, request: { ...req, _collection: col }, response: null, isSending: false }]);
+      setActiveTabId(tabId);
+    }
+  };
+
+  const createNewTab = () => {
+    const newId = 'req-' + Date.now();
+    setTabs([...tabs, {
+      id: newId,
+      request: { name: 'New Request', method: 'GET', url: '' },
+      response: null,
+      isSending: false
+    }]);
+    setActiveTabId(newId);
   };
 
   return (
@@ -57,40 +118,83 @@ function App() {
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden min-h-0">
-        <aside className="w-64 border-r border-gray-800 bg-gray-900 overflow-y-auto">
-          <Sidebar 
-            activeRequest={activeRequest}
-            onSelectRequest={(req, col) => setActiveRequest({ ...req, _collection: col })}
-            onRunCollection={setRunningCollection} 
-          />
-        </aside>
-        <main className="flex-1 bg-gray-950 overflow-hidden p-4 flex flex-col gap-4 min-h-0">
-          <div className="flex-1 min-h-0 flex flex-col">
-            <RequestEditor 
-              request={activeRequest} 
-              onFire={handleFire} 
-              onSave={async (req) => {
-                if (activeRequest._collection) {
-                  try {
-                    await updateRequest(activeRequest._collection, activeRequest.name, req);
-                    setActiveRequest({ ...req, _collection: activeRequest._collection });
-                    window.dispatchEvent(new Event('reqly-reload'));
-                  } catch (e) {
-                    console.error("Failed to save request", e);
-                    alert("Failed to save request.");
-                  }
-                } else {
-                  alert("This request doesn't belong to a collection yet.");
-                }
-              }} 
+        <aside className="w-64 border-r border-gray-800 bg-gray-900 flex flex-col overflow-hidden min-h-0">
+          <div className="flex-1 overflow-y-auto">
+            <Sidebar 
+              activeRequest={activeTab?.request}
+              onSelectRequest={handleSelectRequestFromSidebar}
+              onRunCollection={setRunningCollection} 
             />
           </div>
-          <div className="flex-1 min-h-0 flex flex-col">
-            <ResponseViewer response={response} isSending={isSending} />
+        </aside>
+        
+        <main className="flex-1 bg-gray-950 overflow-hidden flex flex-col min-h-0 relative">
+          <div className="flex bg-gray-900 border-b border-gray-800 shrink-0 overflow-x-auto">
+            {tabs.map(tab => (
+              <div 
+                key={tab.id}
+                onClick={() => setActiveTabId(tab.id)}
+                className={`flex items-center gap-2 px-3 py-2 border-r border-gray-800 cursor-pointer min-w-32 max-w-48 group ${activeTabId === tab.id ? 'bg-gray-800' : 'hover:bg-gray-800/50'}`}
+              >
+                <span className={`text-xs font-bold ${tab.request.method === 'GET' ? 'text-green-400' : tab.request.method === 'POST' ? 'text-yellow-400' : tab.request.method === 'DELETE' ? 'text-red-400' : 'text-blue-400'}`}>
+                  {tab.request.method}
+                </span>
+                <span className="text-sm text-gray-300 truncate flex-1">
+                  {tab.request.name || 'Untitled'}
+                </span>
+                <button 
+                  onClick={(e) => closeTab(e, tab.id)}
+                  className="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            ))}
+            <button 
+              onClick={createNewTab}
+              className="px-3 hover:bg-gray-800 text-gray-400 hover:text-white border-r border-gray-800"
+              title="New Tab"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-hidden relative">
+            {tabs.map(tab => (
+              <div 
+                key={tab.id} 
+                className="absolute inset-0 flex flex-col p-4 gap-4 overflow-hidden"
+                style={{ display: activeTabId === tab.id ? 'flex' : 'none' }}
+              >
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <RequestEditor 
+                    request={tab.request} 
+                    onFire={(req) => handleFire(req, tab.id)} 
+                    onSave={async (req) => {
+                      if (tab.request._collection) {
+                        try {
+                          await updateRequest(tab.request._collection, tab.request.name, req);
+                          updateTab(tab.id, { request: { ...req, _collection: tab.request._collection } });
+                          window.dispatchEvent(new Event('reqly-reload'));
+                        } catch (e) {
+                          console.error("Failed to save request", e);
+                          alert("Failed to save request.");
+                        }
+                      } else {
+                        alert("This request doesn't belong to a collection yet. Support for saving new requests coming soon.");
+                      }
+                    }} 
+                  />
+                </div>
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <ResponseViewer response={tab.response} isSending={tab.isSending} />
+                </div>
+              </div>
+            ))}
           </div>
         </main>
       </div>
-      <PromptBar activeRequest={activeRequest} />
+      <PromptBar activeRequest={activeTab?.request} />
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
       {runningCollection && (
         <CollectionRunnerPanel collectionName={runningCollection} onClose={() => setRunningCollection(null)} />

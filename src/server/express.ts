@@ -4,9 +4,13 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import { EngineContext } from '../mcp/tools/types.js';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 export function startExpressServer(context: EngineContext, port: number = 4242) {
   const app = express();
+  
   app.use(cors());
   app.use(express.json());
 
@@ -245,8 +249,8 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
     }
   });
 
-  // Serve static UI build
-  const uiBuildPath = path.join(process.cwd(), 'src', 'ui', 'dist');
+  const packageRoot = path.resolve(__dirname, '..', '..');
+  const uiBuildPath = path.join(packageRoot, 'src', 'ui', 'dist');
   app.use(express.static(uiBuildPath));
 
   app.use((req, res) => {
