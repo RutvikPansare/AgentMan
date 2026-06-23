@@ -9,18 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-007** Environment Manager (`src/engine/environment-manager.ts`)
-  - Follow TDD: write `src/engine/environment-manager.test.ts` first
-  - `EnvironmentManager` class - takes `configPath` in constructor (path to `.reqly/environments.yaml`)
-  - `createEnvironment(name: string, variables: Record<string, string>): Promise<Environment>`
-  - `getEnvironment(name: string): Promise<Environment>`
-  - `listEnvironments(): Promise<Environment[]>`
-  - `setActiveEnvironment(name: string): Promise<void>`
-  - `getActiveEnvironment(): Promise<Environment | null>`
-  - `updateVariable(envName: string, key: string, value: string): Promise<void>`
-  - All environments stored in a single `environments.yaml` file with an `active` field
-  - SOLID: no knowledge of HTTP execution or collections
-
 - [ ] **T-008** Auth Manager (`src/engine/auth-manager.ts`)
   - Follow TDD: write `src/engine/auth-manager.test.ts` first
   - `AuthManager` class - takes `configPath` (path to `~/.reqly/config.json`) in constructor
