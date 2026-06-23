@@ -70,7 +70,7 @@ function App() {
           <ResponseViewer response={response} isSending={isSending} />
         </main>
       </div>
-      <PromptBar />
+      <PromptBar activeRequest={activeRequest} />
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
       {runningCollection && (
         <CollectionRunnerPanel collectionName={runningCollection} onClose={() => setRunningCollection(null)} />

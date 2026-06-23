@@ -13,17 +13,7 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 
 
-- [ ] **T-029** Response Viewer - complete implementation
-  - Currently shows only "No response yet" with no structure
-  - Split layout: Request Editor top half, Response Viewer bottom half, with a drag handle between them (default 50/50)
-  - Response Viewer has a persistent header row even when empty: "Response" label on the left + status badge area on the right
-  - Empty state: muted "Send a request to see the response" centred in the panel
-  - On response received: status badge (e.g. `200 OK` green / `404 Not Found` red / `500` red) + latency (e.g. `124ms`) in the header row
-  - Three tabs below header: Body | Headers | Raw
-  - Body tab: if content-type is JSON, render pretty-printed JSON in a `<pre>` with basic syntax colouring (strings=green, numbers=blue, keys=zinc-300, via CSS spans). Otherwise render plain text. "Copy" button top-right copies raw body to clipboard.
-  - Headers tab: two-column table (header name | value), monospace font, `border-b border-zinc-800` rows
-  - Raw tab: raw response string in a `<pre>` block, horizontal scroll if long
-  - Loading state while request in-flight: header row shows "Sending..." with a small spinner, tabs are disabled
+
 
 - [ ] **T-030** Prompt bar - wire up and make visible
   - Currently not visible in the UI - needs to be added to the layout

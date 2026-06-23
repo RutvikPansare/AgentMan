@@ -39,3 +39,4 @@ Newest date first. Don't edit history - only append.
 - [x] **T-027** Top bar - environment switcher + settings icon
 - [x] **T-028** Auth tab - complete editor
 - [x] **T-029** Response Viewer - complete implementation
+- [x] **T-030** Prompt bar - wire up and make visible
