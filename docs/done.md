@@ -7,6 +7,7 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-23
+- [x] **T-013** Sidebar Component
 - [x] **T-012** Express Server & UI Serving (`src/server/express.ts`)
 - [x] **T-011** Setup UI Project Scaffold (React + Tailwind CSS) (`src/ui/`)
 - [x] **T-010** CLI entry point (`src/server/index.ts`)

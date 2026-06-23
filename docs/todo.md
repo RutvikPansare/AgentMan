@@ -9,9 +9,6 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
 
 ## Queue
 
-- [ ] **T-013** Sidebar Component
-  - Displays collection tree: folders, requests, environments
-  - Click to open, right-click to rename/delete (hooked up to engine API)
 - [ ] **T-014** Request Editor Component
   - Method dropdown, URL bar
   - Tabs for Headers / Body / Auth / Params
