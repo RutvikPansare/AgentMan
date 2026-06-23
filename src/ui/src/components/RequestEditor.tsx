@@ -66,7 +66,7 @@ export function RequestEditor({ request, onFire, onSave }: RequestEditorProps) {
         {tabs.map(tab => (
           <button 
             key={tab}
-            className={\`px-4 py-2 text-sm font-medium capitalize border-b-2 transition-colors \${activeTab === tab ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-gray-200'}\`}
+            className={`px-4 py-2 text-sm font-medium capitalize border-b-2 transition-colors \${activeTab === tab ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-gray-200'}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab}

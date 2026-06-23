@@ -28,7 +28,7 @@ export function PromptBar() {
       
       setMessages(prev => [...prev, { role: 'assistant', content: simulatedResponse }]);
     } catch (err: any) {
-      setMessages(prev => [...prev, { role: 'assistant', content: \`Error: \${err.message}\` }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: `Error: \${err.message}` }]);
     } finally {
       setLoading(false);
     }
@@ -39,7 +39,7 @@ export function PromptBar() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-4 max-h-32 overflow-y-auto space-y-2 text-sm">
           {messages.map((msg, i) => (
-            <div key={i} className={\`p-2 rounded \${msg.role === 'user' ? 'bg-gray-800 text-blue-300 ml-8' : 'bg-gray-950 text-gray-300 mr-8'}\`}>
+            <div key={i} className={`p-2 rounded \${msg.role === 'user' ? 'bg-gray-800 text-blue-300 ml-8' : 'bg-gray-950 text-gray-300 mr-8'}`}>
               {msg.content}
             </div>
           ))}

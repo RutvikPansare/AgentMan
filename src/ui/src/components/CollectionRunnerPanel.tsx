@@ -82,7 +82,7 @@ export function CollectionRunnerPanel({ collectionName, onClose }: CollectionRun
 
       <div className="flex-1 overflow-y-auto space-y-4 pb-12">
         {result?.results?.map((req: any, i: number) => (
-          <div key={i} className={\`p-4 rounded border \${req.passed ? 'bg-gray-900 border-gray-800' : 'bg-red-950/20 border-red-900/50'}\`}>
+          <div key={i} className={`p-4 rounded border \${req.passed ? 'bg-gray-900 border-gray-800' : 'bg-red-950/20 border-red-900/50'}`}>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-lg">{req.passed ? '✅' : '❌'}</span>
@@ -98,9 +98,9 @@ export function CollectionRunnerPanel({ collectionName, onClose }: CollectionRun
             {req.assertions?.length > 0 && (
               <div className="ml-8 space-y-1">
                 {req.assertions.map((ass: any, j: number) => (
-                  <div key={j} className={\`text-xs \${ass.passed ? 'text-green-500/70' : 'text-red-400 font-semibold'}\`}>
+                  <div key={j} className={`text-xs \${ass.passed ? 'text-green-500/70' : 'text-red-400 font-semibold'}`}>
                     {ass.passed ? '✓' : '✗'} {ass.assertion.field} {ass.assertion.operator} {ass.assertion.value}
-                    {!ass.passed && \` (got: \${ass.actual})\`}
+                    {!ass.passed && ` (got: \${ass.actual})`}
                   </div>
                 ))}
               </div>

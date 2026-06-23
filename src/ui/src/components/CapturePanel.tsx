@@ -43,9 +43,9 @@ export function CapturePanel({ onSelectCaptured }: { onSelectCaptured: (req: any
         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Capture</h3>
         <button 
           onClick={toggleProxy}
-          className={\`w-8 h-4 rounded-full relative transition-colors \${active ? 'bg-blue-600' : 'bg-gray-700'}\`}
+          className={`w-8 h-4 rounded-full relative transition-colors \${active ? 'bg-blue-600' : 'bg-gray-700'}`}
         >
-          <div className={\`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all \${active ? 'left-[18px]' : 'left-0.5'}\`} />
+          <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all \${active ? 'left-[18px]' : 'left-0.5'}`} />
         </button>
       </div>
 
@@ -70,12 +70,12 @@ export function CapturePanel({ onSelectCaptured }: { onSelectCaptured: (req: any
             onClick={() => onSelectCaptured(req)}
           >
             <div className="flex items-center gap-2">
-              <span className={\`text-[10px] font-bold \${
+              <span className={`text-[10px] font-bold \${
                 req.method === 'GET' ? 'text-blue-400' : 
                 req.method === 'POST' ? 'text-green-400' : 
                 req.method === 'PUT' ? 'text-yellow-400' : 
                 req.method === 'DELETE' ? 'text-red-400' : 'text-gray-400'
-              }\`}>
+              }`}>
                 {req.method}
               </span>
               <span className="text-xs text-gray-300 truncate" title={req.url}>
