@@ -14,7 +14,9 @@ import { substitute } from './variable-substitutor.js';
 export async function execute(
   config: RequestConfig,
   env?: Environment,
-  auth?: AuthProfile
+  auth?: AuthProfile,
+  truncate: boolean = true,
+  maxBodyBytes: number = 50 * 1024
 ): Promise<HttpResponse> {
   const vars = env?.variables || {};
 
@@ -42,8 +44,6 @@ export async function execute(
   if (typeof body === 'string') {
     body = substitute(body, vars);
   } else if (body && typeof body === 'object') {
-    // For object bodies (like JSON), we could stringify, substitute, then parse, or just send as JSON
-    // The spec says JSON body, form body, raw body. If it's an object, we assume JSON.
     body = JSON.stringify(body);
     body = substitute(body, vars);
     if (!headers['Content-Type'] && !headers['content-type']) {
@@ -58,8 +58,6 @@ export async function execute(
       const { username, password = '' } = auth.credentials;
       headers['Authorization'] = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
     } else if (auth.type === AuthType.API_KEY && auth.credentials.key) {
-      // Simplification: assume header injection for API key if not specified
-      // Typically API key is either header or query param. We'll default to header 'x-api-key' for now.
       headers['x-api-key'] = auth.credentials.key;
     }
   }
@@ -82,7 +80,24 @@ export async function execute(
     resHeaders[k] = v;
   });
 
-  const text = await response.text();
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  
+  let finalBodyBuffer = buffer;
+  let isTruncated = false;
+
+  if (truncate && buffer.length > maxBodyBytes) {
+    finalBodyBuffer = buffer.subarray(0, maxBodyBytes);
+    isTruncated = true;
+  }
+
+  let text = '';
+  try {
+    text = finalBodyBuffer.toString('utf8');
+  } catch {
+    // Keep empty or best effort if not utf8
+  }
+
   let parsedBody: string | Record<string, unknown> | null = text;
   
   if (text) {
@@ -95,9 +110,34 @@ export async function execute(
     parsedBody = null;
   }
 
+  let fullParsedBody: string | Record<string, unknown> | null = null;
+
+  if (isTruncated) {
+    let fullText = '';
+    try {
+      fullText = buffer.toString('utf8');
+      try {
+        fullParsedBody = JSON.parse(fullText);
+      } catch {
+        fullParsedBody = fullText;
+      }
+    } catch {
+      fullParsedBody = null;
+    }
+
+    const sizeMb = (buffer.length / (1024 * 1024)).toFixed(2);
+    const msg = `\n\n[Response truncated: ${sizeMb}MB received, showing first 50KB. Use --full to retrieve complete response.]`;
+    if (typeof parsedBody === 'string') {
+      parsedBody += msg;
+    } else {
+      parsedBody = (text || '') + msg;
+    }
+  }
+
   return {
     status: response.status,
     body: parsedBody,
+    ...(isTruncated ? { fullBody: fullParsedBody } : {}),
     headers: resHeaders,
     latency,
     timestamp: new Date().toISOString(),

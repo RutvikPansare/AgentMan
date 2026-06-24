@@ -14,6 +14,7 @@ describe('http-executor', () => {
     const mockResponse = {
       status: 200,
       headers: new Headers({ 'content-type': 'application/json' }),
+      arrayBuffer: vi.fn().mockResolvedValue(new TextEncoder().encode('{"hello":"world"}').buffer),
       text: vi.fn().mockResolvedValue('{"hello":"world"}'),
     };
     vi.mocked(fetch).mockResolvedValue(mockResponse as any);
@@ -35,6 +36,7 @@ describe('http-executor', () => {
     const mockResponse = {
       status: 200,
       headers: new Headers(),
+      arrayBuffer: vi.fn().mockResolvedValue(new TextEncoder().encode('ok').buffer),
       text: vi.fn().mockResolvedValue('ok'),
     };
     vi.mocked(fetch).mockResolvedValue(mockResponse as any);
@@ -64,7 +66,7 @@ describe('http-executor', () => {
   });
 
   it('should inject bearer auth', async () => {
-    const mockResponse = { status: 200, headers: new Headers(), text: vi.fn().mockResolvedValue('') };
+    const mockResponse = { status: 200, headers: new Headers(), arrayBuffer: vi.fn().mockResolvedValue(new TextEncoder().encode('').buffer), text: vi.fn().mockResolvedValue('') };
     vi.mocked(fetch).mockResolvedValue(mockResponse as any);
 
     const config: RequestConfig = { method: 'GET', url: 'http://example.com' };
@@ -86,5 +88,41 @@ describe('http-executor', () => {
 
     const config: RequestConfig = { method: 'GET', url: 'http://example.com' };
     await expect(execute(config)).rejects.toThrow(RequestError);
+  });
+
+  it('should truncate large responses by default', async () => {
+    const largeBody = 'a'.repeat(60 * 1024); // 60KB
+    const arrayBuffer = new TextEncoder().encode(largeBody).buffer;
+    const mockResponse = {
+      status: 200,
+      headers: new Headers(),
+      arrayBuffer: vi.fn().mockResolvedValue(arrayBuffer)
+    };
+    vi.mocked(fetch).mockResolvedValue(mockResponse as any);
+
+    const config: RequestConfig = { method: 'GET', url: 'http://example.com' };
+    const result = await execute(config);
+    
+    expect(typeof result.body).toBe('string');
+    expect((result.body as string).length).toBeLessThan(60 * 1024);
+    expect((result.body as string)).toContain('[Response truncated: 0.06MB received, showing first 50KB. Use --full to retrieve complete response.]');
+  });
+
+  it('should not truncate large responses if truncate is false', async () => {
+    const largeBody = 'a'.repeat(60 * 1024); // 60KB
+    const arrayBuffer = new TextEncoder().encode(largeBody).buffer;
+    const mockResponse = {
+      status: 200,
+      headers: new Headers(),
+      arrayBuffer: vi.fn().mockResolvedValue(arrayBuffer)
+    };
+    vi.mocked(fetch).mockResolvedValue(mockResponse as any);
+
+    const config: RequestConfig = { method: 'GET', url: 'http://example.com' };
+    const result = await execute(config, undefined, undefined, false);
+    
+    expect(typeof result.body).toBe('string');
+    expect((result.body as string).length).toBe(60 * 1024);
+    expect((result.body as string)).not.toContain('[Response truncated');
   });
 });

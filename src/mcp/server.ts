@@ -13,6 +13,13 @@ import * as getResponse from './tools/get-response.js';
 import * as startProxy from './tools/start-proxy.js';
 import * as stopProxy from './tools/stop-proxy.js';
 
+import * as createEnvironment from './tools/create-environment.js';
+import * as setVariable from './tools/set-variable.js';
+import * as getVariables from './tools/get-variables.js';
+import * as deleteVariable from './tools/delete-variable.js';
+
+import * as getResponseFull from './tools/get-response-full.js';
+
 const tools = [
   runRequest,
   createRequest,
@@ -22,7 +29,12 @@ const tools = [
   runCollection,
   getResponse,
   startProxy,
-  stopProxy
+  stopProxy,
+  createEnvironment,
+  setVariable,
+  getVariables,
+  deleteVariable,
+  getResponseFull
 ];
 
 import { z } from 'zod';

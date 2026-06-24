@@ -18,7 +18,7 @@ interface ConfigFile {
 export class AuthManager {
   constructor(private configPath: string) {}
 
-  private async loadConfig(): Promise<ConfigFile> {
+  public async loadConfig(): Promise<ConfigFile> {
     if (!existsSync(this.configPath)) {
       return {};
     }

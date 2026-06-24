@@ -78,9 +78,15 @@ export class CollectionRunner {
         failedCount++;
       }
 
+      let agentResponse: HttpResponse | null = null;
+      if (response) {
+        agentResponse = { ...response };
+        delete agentResponse.fullBody;
+      }
+
       results.push({
         requestName: request.name,
-        response,
+        response: agentResponse,
         assertions: assertionResults,
         passed,
         duration,

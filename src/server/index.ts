@@ -55,7 +55,11 @@ async function main() {
     proxyServer,
     responseStore,
     historyStore,
-    executeRequest
+    executeRequest: async (req, env, auth, truncate) => {
+      const config = await authManager.loadConfig();
+      const maxBytes = config.maxBodyBytes || 50 * 1024;
+      return executeRequest(req, env, auth, truncate, maxBytes);
+    }
   };
 
   const expressServer = startExpressServer(context);

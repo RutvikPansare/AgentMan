@@ -13,7 +13,7 @@ export interface EngineContext {
   proxyServer: ProxyServer;
   responseStore: ResponseStore;
   historyStore: HistoryStore;
-  executeRequest: (req: CollectionRequest, env?: Environment, auth?: AuthProfile) => Promise<HttpResponse>;
+  executeRequest: (req: CollectionRequest, env?: Environment, auth?: AuthProfile, truncate?: boolean, maxBodyBytes?: number) => Promise<HttpResponse>;
 }
 
 export interface ToolDefinition {

@@ -20,8 +20,8 @@ Reqly is an execution engine, not an AI product. The AI always lives outside Req
 - **Config:** `~/.reqly/config.json` for global settings (reserved for future preferences - no BYOK key, agents talk to Reqly via MCP).
 
 ## What's Built
-- **Core Engine:** HTTP execution, Collection Management (YAML), Environment substitution, Auth profiles.
-- **MCP Server:** Tools to create, list, run requests/collections, and manage proxy.
+- **Core Engine:** HTTP executor (with >50KB response truncation), Collection Management (YAML), Environment substitution, Auth profiles.
+- **MCP Server:** Tools to create, list, run requests/collections, manage environments and variables (create/get/set/delete), retrieve full untruncated responses, and manage proxy.
 - **Local UI:** Left icon navigation rail (Collections / Environments / History / Capture / Settings) driving switchable sidebar panels, Request Editor with params/headers/body/auth/assertions, Response Viewer with syntax highlighting and assertions results, Settings panel (placeholder for future preferences), Multiple Tabs support for parallel editing.
 - **Differentiators:** 
   - **Auto-Capture Proxy:** Captures live traffic and saves requests.

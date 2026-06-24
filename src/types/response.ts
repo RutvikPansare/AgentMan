@@ -1,6 +1,7 @@
 export interface HttpResponse {
   status: number;
   body: string | Record<string, unknown> | null;
+  fullBody?: string | Record<string, unknown> | null;
   headers: Record<string, string>;
   latency: number;
   requestId?: string;
