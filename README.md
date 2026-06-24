@@ -7,7 +7,7 @@ Reqly is an execution engine for API requests, designed primarily as an MCP (Mod
 Run these two commands anywhere to install Reqly globally and configure your AI tool (Cursor, Claude Desktop, Claude Code, Gemini, or Codex) to use it:
 
 ```bash
-npm install -g reqly
+npm install -g @rutvikpansare123/reqly
 reqly setup
 ```
 
