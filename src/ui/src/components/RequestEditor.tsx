@@ -88,7 +88,7 @@ export function RequestEditor({ request, onFire, onSave, onChange }: RequestEdit
         setGraphqlVariables('');
       }
     }
-  }, [request]);
+  }, [request?.id, request?.name]);
 
   const updateUrlWithParams = (base: string, params: KeyValuePair[]) => {
     const active = params.filter(p => p.enabled && (p.key || p.value));
