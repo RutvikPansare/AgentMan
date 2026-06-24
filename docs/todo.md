@@ -93,6 +93,20 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
     - Spacing: audit all padding/gap values for consistency - Hoppscotch is dense but not cramped
   - Reference: `example/hoppscotch/packages/hoppscotch-common/src/components/` throughout. Use `hoppscotch.io` live site as the visual target.
 
+- [ ] **T-049** UI state persistence across page refreshes (M4 UI)
+  - Currently all UI state lives in React `useState` in `App.tsx` and is lost on refresh
+  - **What to persist in `localStorage`:**
+    - `reqly.tabs` - array of open tabs (method, URL, name, collection, headers, body - but NOT response data)
+    - `reqly.activeTabId` - which tab was active
+    - `reqly.activePanel` - which nav rail panel was active (collections/environments/history/capture)
+  - **What to persist server-side** (write to `~/.reqly/config.json`):
+    - Active environment name - currently held in memory only, lost on server restart
+    - Add `activeEnvironment` field to config.json; `PUT /api/environments/active` already sets it, just needs to write through to disk
+  - **Implementation:** create a `useLocalStorage` hook in `src/ui/src/hooks/useLocalStorage.ts`. On mount, rehydrate `tabs`, `activeTabId`, `activePanel` from localStorage. On every state change, write back. Debounce writes by 300ms to avoid thrashing.
+  - Do NOT persist response bodies - these are ephemeral and can be large
+  - Do NOT persist sensitive data (auth tokens, env variable values) to localStorage - those stay server-side only
+  - Reference: `example/hoppscotch/packages/hoppscotch-common/src/services/persistence/` for how Hoppscotch structures its persistence layer and what it chooses to save vs. discard
+
 
 
 
