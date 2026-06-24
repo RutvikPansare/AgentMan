@@ -93,7 +93,7 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
     - Spacing: audit all padding/gap values for consistency - Hoppscotch is dense but not cramped
   - Reference: `example/hoppscotch/packages/hoppscotch-common/src/components/` throughout. Use `hoppscotch.io` live site as the visual target.
 
-- [ ] **T-049** UI state persistence across page refreshes (M4 UI)
+- [x] **T-049** UI state persistence across page refreshes (M4 UI)
   - Currently all UI state lives in React `useState` in `App.tsx` and is lost on refresh
   - **What to persist in `localStorage`:**
     - `reqly.tabs` - array of open tabs (method, URL, name, collection, headers, body - but NOT response data)

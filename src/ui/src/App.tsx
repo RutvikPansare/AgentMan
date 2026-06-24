@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { updateRequest } from './api';
 import { methodColorClass } from './lib/colors';
+import { useLocalStorage } from './hooks/useLocalStorage';
 import { NavRail } from './components/NavRail';
 import type { NavPanel } from './components/NavRail';
 import { CollectionsPanel } from './components/CollectionsPanel';
@@ -41,10 +42,37 @@ const makeTab = (request: any): TabData => ({
   isSending: false
 });
 
+const TABS_KEY = 'reqly.tabs';
+const ACTIVE_TAB_KEY = 'reqly.activeTabId';
+const ACTIVE_PANEL_KEY = 'reqly.activePanel';
+
+// Strip ephemeral and sensitive data before writing tabs to localStorage.
+// Response bodies are large/ephemeral; auth credentials are sensitive.
+const sanitizeTab = (tab: TabData) => {
+  const req = { ...tab.request };
+  if (req.auth?.credentials) req.auth = { ...req.auth, credentials: undefined };
+  return { id: tab.id, request: req };
+};
+
+const rehydrateTabs = (): TabData[] => {
+  try {
+    const raw = localStorage.getItem(TABS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as Array<{ id: string; request: any }>;
+    return parsed.map(t => {
+      const tab = makeTab(t.request);
+      tab.id = t.id;
+      return tab;
+    });
+  } catch {
+    return [];
+  }
+};
+
 function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-  const [activePanel, setActivePanel] = useState<NavPanel>('collections');
+  const [activePanel, setActivePanel] = useLocalStorage<NavPanel>(ACTIVE_PANEL_KEY, 'collections');
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -58,13 +86,29 @@ function App() {
   }, []);
 
   const [tabs, setTabs] = useState<TabData[]>(() => {
+    const restored = rehydrateTabs();
+    if (restored.length > 0) return restored;
     const t = makeTab({ name: 'New Request', method: 'GET', url: 'https://jsonplaceholder.typicode.com/todos/1' });
     t.id = 'default';
     return [t];
   });
-  const [activeTabId, setActiveTabId] = useState<string>('default');
+  const [activeTabId, setActiveTabId] = useLocalStorage<string>(ACTIVE_TAB_KEY, tabs[0]?.id || 'default');
   const [runningCollection, setRunningCollection] = useState<string | null>(null);
   const tabBarRef = useRef<HTMLDivElement>(null);
+
+  // Persist sanitized tabs (debounced).
+  const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (persistTimer.current) clearTimeout(persistTimer.current);
+    persistTimer.current = setTimeout(() => {
+      try {
+        localStorage.setItem(TABS_KEY, JSON.stringify(tabs.map(sanitizeTab)));
+      } catch {
+        // ignore quota errors
+      }
+    }, 300);
+    return () => { if (persistTimer.current) clearTimeout(persistTimer.current); };
+  }, [tabs]);
 
   const scrollTabs = (dir: 'left' | 'right') => {
     const el = tabBarRef.current;
