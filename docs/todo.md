@@ -67,7 +67,7 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
   - Active tab: bottom border highlight (Hoppscotch uses a colored underline - match that style)
   - Reference: `example/hoppscotch/packages/hoppscotch-common/src/components/http/` for the tab bar component and active/unsaved state styling
 
-- [ ] **T-046** Variables tab in request editor (M4 UI)
+- [x] **T-046** Variables tab in request editor (M4 UI)
   - Add a "Variables" tab next to Params / Headers / Body / Auth / Assertions
   - Shows all environment variables currently in scope (from the active environment)
   - Read-only list: Key / Value / Source (environment name). Not editable here - editing is done in the Environment editor (T-041).

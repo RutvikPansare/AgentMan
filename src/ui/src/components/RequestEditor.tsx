@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchAuthProfiles, createAuthProfile } from '../api';
+import { fetchAuthProfiles, createAuthProfile, fetchEnvironments } from '../api';
 import { KeyValueEditor } from './KeyValueEditor';
 import type { KeyValuePair } from './KeyValueEditor';
 
@@ -11,7 +11,20 @@ interface RequestEditorProps {
 }
 
 export function RequestEditor({ request, onFire, onSave, onChange }: RequestEditorProps) {
-  const tabs = ['params', 'headers', 'body', 'auth', 'assertions'];
+  const tabs = ['params', 'headers', 'body', 'auth', 'assertions', 'variables'];
+
+  const [activeEnvVars, setActiveEnvVars] = useState<Record<string, string>>({});
+  const [activeEnvName, setActiveEnvName] = useState<string>('');
+
+  useEffect(() => {
+    fetchEnvironments()
+      .then((data: any) => {
+        const active = data.environments?.find((e: any) => e.name === data.active);
+        setActiveEnvName(active?.name || '');
+        setActiveEnvVars(active?.variables || {});
+      })
+      .catch(console.error);
+  }, []);
   
   if (!request) {
     return <div className="h-full flex items-center justify-center text-gray-500">Select a request to edit</div>;
@@ -411,6 +424,28 @@ export function RequestEditor({ request, onFire, onSave, onChange }: RequestEdit
                 >
                   Save as Profile
                 </button>
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'variables' ? (
+          <div className="py-2">
+            <p className="text-xs text-gray-500 mb-3">
+              Variables in scope from the active environment{activeEnvName ? `: ${activeEnvName}` : ''}. Edit them in the Environments panel.
+            </p>
+            {Object.keys(activeEnvVars).length === 0 ? (
+              <p className="text-sm text-gray-600 italic">No variables in the active environment.</p>
+            ) : (
+              <div className="border border-gray-800 rounded overflow-hidden">
+                <div className="grid grid-cols-[1fr_1fr] bg-gray-950 text-xs font-semibold text-gray-500 uppercase tracking-widest px-3 py-1.5 border-b border-gray-800">
+                  <span>Key</span>
+                  <span>Value</span>
+                </div>
+                {Object.entries(activeEnvVars).map(([k, v]) => (
+                  <div key={k} className="grid grid-cols-[1fr_1fr] px-3 py-1.5 text-sm border-b border-gray-800 last:border-b-0">
+                    <span className="text-gray-300 font-mono truncate">{`{{${k}}}`}</span>
+                    <span className="text-gray-400 font-mono truncate">{String(v)}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
