@@ -8,6 +8,9 @@ Newest entries at the top.
 
 ## 2026-06-24
 
+**Decision:** GraphQL support is a UI-mode toggle on the request editor (`mode: 'graphql'`), not a separate request type, executor path, or MCP tool. The editor assembles `{ query, variables }` as the body object and the existing HTTP executor handles it transparently (it already stringifies object bodies and sets `Content-Type: application/json`).
+**Why:** The executor is method+body agnostic - a GraphQL request is just a POST with a JSON `{ query, variables }` body. Adding a parallel GraphQL executor or a new MCP tool would duplicate the HTTP path for no behavioural gain and violate the engine-agnostic principle. Keeping the mode flag on the request (persisted to YAML) lets the UI render the query/variables editor while the engine stays dumb. Introspection runs through the normal adhoc run endpoint, so no new backend route was needed either. Schema autocomplete is intentionally minimal (field list display) for the MVP - a full CodeMirror-style autocomplete is deferred.
+
 **Decision:** Request history lives in a dedicated `HistoryStore` engine module (in-memory, capped at 200 entries) on `EngineContext`, parallel to `ResponseStore`, rather than as a server-only array or persisted file.
 **Why:** History must capture every fired request regardless of entry point - adhoc UI runs, MCP `run_request`, and collection runs all need to append. Putting the store on `EngineContext` (the shared seam both the MCP tools and Express handlers already hold) means every execution path logs through one `append` call with no special-casing, and the UI's `GET /api/history` reads the same source. In-memory (no YAML persistence) matches the T-043 spec's MVP scope: history is a working scratchpad, not a committed artifact. The 200-entry cap bounds memory for long sessions.
 

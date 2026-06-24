@@ -74,7 +74,7 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
   - Useful for debugging: "why isn't my {{baseUrl}} resolving?" - check this tab
   - Reference: `example/hoppscotch/packages/hoppscotch-common/src/components/http/` - Hoppscotch has a Variables panel that shows resolved variables, use the same two-column table layout
 
-- [ ] **T-047** GraphQL mode in request editor (M4 UI)
+- [x] **T-047** GraphQL mode in request editor (M4 UI)
   - Toggle button near the method dropdown to switch a request between REST and GraphQL mode
   - In GraphQL mode: URL bar stays, method locked to POST, Body tab replaced with a Query editor (textarea with monospace font) + Variables sub-tab (JSON input for GraphQL variables)
   - Schema introspection button: fires `POST <url>` with the standard introspection query, parses the response, stores schema in memory
