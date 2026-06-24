@@ -261,7 +261,7 @@ export function startExpressServer(context: EngineContext, port: number = 4242) 
     }
   });
 
-  app.listen(port, () => {
+  return app.listen(port, () => {
     console.error(`Reqly Express server listening on http://localhost:${port}`);
   });
 }

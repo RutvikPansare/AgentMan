@@ -6,6 +6,9 @@ When a task on docs/todo.md is finished, cut its line here under today's date.
 Newest date first. Don't edit history - only append.
 -->
 
+## 2026-06-24
+- [x] **T-034** Add graceful shutdown handlers for Express and proxy servers
+
 ## 2026-06-23
 - [x] **T-033** Add multiple tabs feature to the UI
 - [x] **T-032** Fix server hang by cleaning up dangling Node processes on port 4242

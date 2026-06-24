@@ -36,8 +36,31 @@ async function main() {
     executeRequest
   };
 
-  startExpressServer(context);
+  const expressServer = startExpressServer(context);
   await startServer(context);
+
+  const shutdown = async () => {
+    console.error('Shutting down Reqly gracefully...');
+    try {
+      await context.proxyServer.stop();
+    } catch (e) {
+      // ignore
+    }
+    
+    expressServer.close(() => {
+      console.error('Express server closed.');
+      process.exit(0);
+    });
+
+    // Fallback to force exit if connections are hanging
+    setTimeout(() => {
+      console.error('Forced shutdown after timeout.');
+      process.exit(1);
+    }, 3000).unref();
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 }
 
 main().catch(err => {
