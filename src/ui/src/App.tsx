@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { updateRequest } from './api';
+import { methodColorClass } from './lib/colors';
 import { NavRail } from './components/NavRail';
 import type { NavPanel } from './components/NavRail';
 import { CollectionsPanel } from './components/CollectionsPanel';
@@ -227,7 +228,7 @@ function App() {
                     {isActive && (
                       <span className="absolute left-0 bottom-0 right-0 h-0.5 bg-blue-500" aria-hidden="true" />
                     )}
-                    <span className={`text-xs font-bold ${tab.request.method === 'GET' ? 'text-green-400' : tab.request.method === 'POST' ? 'text-yellow-400' : tab.request.method === 'DELETE' ? 'text-red-400' : 'text-blue-400'}`}>
+                    <span className={`text-xs font-bold ${methodColorClass(tab.request.method)}`}>
                       {tab.request.method}
                     </span>
                     <span className="text-sm text-gray-300 truncate flex-1">

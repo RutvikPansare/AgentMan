@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchCollections, createCollection, addRequest, deleteRequest, updateRequest, renameCollection, deleteCollection, duplicateRequest } from '../api';
+import { methodColorClass } from '../lib/colors';
 
 interface CollectionsPanelProps {
   activeRequest: any;
@@ -116,16 +117,7 @@ export function CollectionsPanel({ activeRequest, onSelectRequest, onRunCollecti
     setRenameValue('');
   };
 
-  const getMethodColor = (method: string) => {
-    switch (method) {
-      case 'GET': return 'text-green-500';
-      case 'POST': return 'text-yellow-500';
-      case 'PUT': return 'text-blue-500';
-      case 'PATCH': return 'text-orange-500';
-      case 'DELETE': return 'text-red-500';
-      default: return 'text-gray-500';
-    }
-  };
+  const getMethodColor = methodColorClass;
 
   return (
     <div className="p-3 flex flex-col gap-3 relative h-full">

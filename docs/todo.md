@@ -82,7 +82,7 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
   - On Send: engine posts `{ query, variables }` to the URL - the existing HTTP executor handles this transparently
   - Reference: `example/hoppscotch/packages/hoppscotch-common/src/components/graphql/` for the query editor layout, introspection flow, and variables panel. Also `example/hoppscotch/packages/hoppscotch-data/src/graphql/` for the data types.
 
-- [ ] **T-048** Visual polish pass - match Hoppscotch aesthetic (M4 UI)
+- [x] **T-048** Visual polish pass - match Hoppscotch aesthetic (M4 UI)
   - Audit every component against the Hoppscotch reference screenshots and `example/hoppscotch/`
   - Specific items:
     - Method badge colors: GET=green, POST=yellow, PUT=blue, PATCH=orange, DELETE=red - match Hoppscotch's exact palette

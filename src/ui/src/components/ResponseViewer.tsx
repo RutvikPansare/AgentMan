@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { statusBadgeClass } from '../lib/colors';
 
 interface ResponseViewerProps {
   response: any;
@@ -78,7 +79,7 @@ export function ResponseViewer({ response, isSending }: ResponseViewerProps) {
           </div>
         ) : (
           <div className="flex gap-4 text-sm font-mono items-center">
-            <span className={`px-2 py-0.5 rounded text-xs font-bold ${isError ? 'bg-red-900/50 text-red-400' : 'bg-green-900/50 text-green-400'}`}>
+            <span className={`px-2 py-0.5 rounded text-xs font-bold ${statusBadgeClass(status)}`}>
               {status} {isError ? 'Error' : 'OK'}
             </span>
             <span className="text-gray-400">{latency || 0} ms</span>

@@ -7,6 +7,7 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-24
+- [x] **T-048** Visual polish pass - match Hoppscotch aesthetic (M4 UI)
 - [x] **T-047** GraphQL mode in request editor (M4 UI)
 - [x] **T-046** Variables tab in request editor (M4 UI)
 - [x] **T-045** Request tabs - polish and closeable (M4 UI)

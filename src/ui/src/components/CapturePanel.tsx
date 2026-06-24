@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { methodColorClass } from '../lib/colors';
 
 export function CapturePanel({ onSelectCaptured }: { onSelectCaptured: (req: any) => void }) {
   const [active, setActive] = useState(false);
@@ -78,12 +79,7 @@ export function CapturePanel({ onSelectCaptured }: { onSelectCaptured: (req: any
               onClick={() => onSelectCaptured(req)}
             >
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold ${
-                  req.method === 'GET' ? 'text-green-400' :
-                  req.method === 'POST' ? 'text-yellow-400' :
-                  req.method === 'PUT' ? 'text-blue-400' :
-                  req.method === 'DELETE' ? 'text-red-400' : 'text-gray-400'
-                }`}>
+                <span className={`text-[10px] font-bold ${methodColorClass(req.method)}`}>
                   {req.method}
                 </span>
                 <span className="text-xs text-gray-300 truncate" title={req.url}>

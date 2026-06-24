@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { fetchCollections } from '../api';
+import { methodColorClass } from '../lib/colors';
 
 interface SpotlightSearchProps {
   onSelectRequest: (req: any, collectionName: string) => void;
@@ -15,16 +16,7 @@ interface ResultItem {
   request?: any;
 }
 
-function methodColor(method: string): string {
-  switch (method) {
-    case 'GET': return 'text-green-500';
-    case 'POST': return 'text-yellow-500';
-    case 'PUT': return 'text-blue-500';
-    case 'PATCH': return 'text-orange-500';
-    case 'DELETE': return 'text-red-500';
-    default: return 'text-gray-500';
-  }
-}
+const methodColor = methodColorClass;
 
 export function SpotlightSearch({ onSelectRequest, onClose }: SpotlightSearchProps) {
   const [query, setQuery] = useState('');

@@ -1,28 +1,14 @@
 import { useEffect, useState } from 'react';
 import { fetchHistory, clearHistory } from '../api';
 import type { HistoryEntry } from '../api';
+import { methodColorClass, statusColorClass } from '../lib/colors';
 
 interface HistoryPanelProps {
   onSelectRequest: (req: any, collectionName: string) => void;
 }
 
-function statusColor(status: number): string {
-  if (status >= 200 && status < 300) return 'text-green-500';
-  if (status >= 400 && status < 500) return 'text-yellow-500';
-  if (status >= 500) return 'text-red-500';
-  return 'text-gray-400';
-}
-
-function methodColor(method: string): string {
-  switch (method) {
-    case 'GET': return 'text-green-500';
-    case 'POST': return 'text-yellow-500';
-    case 'PUT': return 'text-blue-500';
-    case 'PATCH': return 'text-orange-500';
-    case 'DELETE': return 'text-red-500';
-    default: return 'text-gray-500';
-  }
-}
+const statusColor = statusColorClass;
+const methodColor = methodColorClass;
 
 function formatTime(ts: number): string {
   const d = new Date(ts);
