@@ -50,7 +50,7 @@ IDs never reuse - increment from the highest T-NNN in either this file or done.m
   - Reference: `example/hoppscotch/packages/hoppscotch-common/src/components/history/` for the list item layout (method badge + URL + status + timestamp)
   - _Requires T-040 (nav rail) for panel mounting._
 
-- [ ] **T-044** Search / command palette (M4 UI)
+- [x] **T-044** Search / command palette (M4 UI)
   - Triggered by ⌘K (Mac) / Ctrl+K (Windows/Linux), or clicking a search bar in the top area
   - Full-screen overlay with a centered input
   - Searches across: collection names, request names, URLs. Results grouped by type.

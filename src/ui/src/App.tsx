@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { updateRequest } from './api';
 import { NavRail } from './components/NavRail';
 import type { NavPanel } from './components/NavRail';
@@ -6,6 +6,7 @@ import { CollectionsPanel } from './components/CollectionsPanel';
 import { EnvironmentsPanel } from './components/EnvironmentsPanel';
 import { HistoryPanel } from './components/HistoryPanel';
 import { CapturePanel } from './components/CapturePanel';
+import { SpotlightSearch } from './components/SpotlightSearch';
 import { RequestEditor } from './components/RequestEditor';
 import { ResponseViewer } from './components/ResponseViewer';
 import { EnvironmentSwitcher } from './components/EnvironmentSwitcher';
@@ -22,7 +23,19 @@ interface TabData {
 
 function App() {
   const [showSettings, setShowSettings] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const [activePanel, setActivePanel] = useState<NavPanel>('collections');
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowSearch(s => !s);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   const [tabs, setTabs] = useState<TabData[]>([
     {
@@ -123,6 +136,15 @@ function App() {
       <header className="h-14 border-b border-gray-800 bg-gray-950 flex items-center justify-between px-4 shrink-0">
         <h1 className="font-semibold tracking-wide">Reqly</h1>
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowSearch(true)}
+            className="text-xs text-gray-400 hover:text-white px-3 py-1 rounded border border-gray-700 hover:bg-gray-800 transition-colors flex items-center gap-2"
+            title="Search (Cmd+K)"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Search</span>
+            <span className="text-[10px] text-gray-600">⌘K</span>
+          </button>
           <EnvironmentSwitcher />
           <button 
             onClick={() => setShowSettings(true)} 
@@ -233,6 +255,12 @@ function App() {
         </main>
       </div>
       <PromptBar activeRequest={activeTab?.request} />
+      {showSearch && (
+        <SpotlightSearch
+          onSelectRequest={handleSelectRequestFromSidebar}
+          onClose={() => setShowSearch(false)}
+        />
+      )}
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
       {runningCollection && (
         <CollectionRunnerPanel collectionName={runningCollection} onClose={() => setRunningCollection(null)} />
