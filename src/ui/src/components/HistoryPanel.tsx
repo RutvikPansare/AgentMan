@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { fetchHistory, clearHistory } from '../api';
 import type { HistoryEntry } from '../api';
-import { methodColorClass, statusColorClass } from '../lib/colors';
+import { METHOD_BADGE_BASE, methodBadgeClass, statusColorClass } from '../lib/colors';
 
 interface HistoryPanelProps {
   onSelectRequest: (req: any, collectionName: string) => void;
 }
 
 const statusColor = statusColorClass;
-const methodColor = methodColorClass;
 
 function formatTime(ts: number): string {
   const d = new Date(ts);
@@ -68,7 +67,7 @@ export function HistoryPanel({ onSelectRequest }: HistoryPanelProps) {
             onClick={() => handleClick(entry)}
             className="px-2 py-1.5 rounded cursor-pointer hover:bg-gray-800/50 flex items-center gap-2 group"
           >
-            <span className={`text-[10px] font-bold w-12 shrink-0 ${methodColor(entry.method)}`}>
+            <span className={`${METHOD_BADGE_BASE} ${methodBadgeClass(entry.method)} shrink-0`}>
               {entry.method}
             </span>
             <div className="flex-1 min-w-0">

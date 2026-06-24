@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { methodColorClass } from '../lib/colors';
+import { METHOD_BADGE_BASE, methodBadgeClass } from '../lib/colors';
 
 export function CapturePanel({ onSelectCaptured }: { onSelectCaptured: (req: any) => void }) {
   const [active, setActive] = useState(false);
@@ -79,7 +79,7 @@ export function CapturePanel({ onSelectCaptured }: { onSelectCaptured: (req: any
               onClick={() => onSelectCaptured(req)}
             >
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold ${methodColorClass(req.method)}`}>
+                <span className={`${METHOD_BADGE_BASE} ${methodBadgeClass(req.method)}`}>
                   {req.method}
                 </span>
                 <span className="text-xs text-gray-300 truncate" title={req.url}>

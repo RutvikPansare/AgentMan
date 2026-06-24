@@ -7,6 +7,10 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-24
+- [x] **T-055** UI icon and styling refresh - Lucide React throughout, pill method badges, nav rail active chip
+- [x] **T-054** Widen search bar in top bar, reposition left-of-center
+- [x] **T-053** Move GraphQL to dedicated nav rail section (full workspace)
+- [x] **T-052** Remove prompt bar and strip BYOK from settings
 - [x] **T-051** GraphQL IDE Autocomplete (CodeMirror + cm6-graphql)
 - [x] **T-050** Fix URL input field flickering by updating React useEffect dependencies
 - [x] **T-049** UI state persistence across page refreshes (M4 UI)

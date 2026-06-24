@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { fetchEnvironments, setActiveEnvironment } from '../api';
 
 export function EnvironmentSwitcher() {
@@ -89,9 +90,7 @@ export function EnvironmentSwitcher() {
       >
         <span className={`w-2 h-2 rounded-full ${active ? 'bg-green-500' : 'bg-gray-600'}`}></span>
         {active || 'No env'}
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-          <path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-        </svg>
+        <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (

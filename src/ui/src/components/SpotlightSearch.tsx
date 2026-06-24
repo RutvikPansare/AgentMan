@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { fetchCollections } from '../api';
-import { methodColorClass } from '../lib/colors';
+import { METHOD_BADGE_BASE, methodBadgeClass } from '../lib/colors';
 
 interface SpotlightSearchProps {
   onSelectRequest: (req: any, collectionName: string) => void;
@@ -15,8 +15,6 @@ interface ResultItem {
   collectionName: string;
   request?: any;
 }
-
-const methodColor = methodColorClass;
 
 export function SpotlightSearch({ onSelectRequest, onClose }: SpotlightSearchProps) {
   const [query, setQuery] = useState('');
@@ -125,7 +123,7 @@ export function SpotlightSearch({ onSelectRequest, onClose }: SpotlightSearchPro
               }`}
             >
               {item.method ? (
-                <span className={`text-[10px] font-bold w-12 shrink-0 ${methodColor(item.method)}`}>
+                <span className={`${METHOD_BADGE_BASE} ${methodBadgeClass(item.method)} shrink-0`}>
                   {item.method}
                 </span>
               ) : (

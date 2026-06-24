@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { ChevronRight, Play, Plus } from 'lucide-react';
 import { fetchCollections, createCollection, addRequest, deleteRequest, updateRequest, renameCollection, deleteCollection, duplicateRequest } from '../api';
-import { methodColorClass } from '../lib/colors';
+import { METHOD_BADGE_BASE, methodBadgeClass } from '../lib/colors';
 
 interface CollectionsPanelProps {
   activeRequest: any;
@@ -117,8 +118,6 @@ export function CollectionsPanel({ activeRequest, onSelectRequest, onRunCollecti
     setRenameValue('');
   };
 
-  const getMethodColor = methodColorClass;
-
   return (
     <div className="p-3 flex flex-col gap-3 relative h-full">
       <div className="flex items-center justify-between shrink-0">
@@ -167,7 +166,7 @@ export function CollectionsPanel({ activeRequest, onSelectRequest, onRunCollecti
                   className="flex items-center gap-1 flex-1 overflow-hidden"
                   onClick={() => setExpandedCols(prev => ({ ...prev, [col.name]: !isExpanded }))}
                 >
-                  <span className={`text-gray-500 text-[10px] transition-transform ${isExpanded ? 'rotate-90' : ''}`}>&#9654;</span>
+                  <span className={`text-gray-500 flex items-center transition-transform ${isExpanded ? 'rotate-90' : ''}`}><ChevronRight size={14} /></span>
                   {renamingCol === col.name ? (
                     <input
                       autoFocus
@@ -187,18 +186,18 @@ export function CollectionsPanel({ activeRequest, onSelectRequest, onRunCollecti
                 </div>
                 <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
-                    className="text-gray-400 hover:text-white px-1.5"
+                    className="text-gray-400 hover:text-white px-1.5 flex items-center"
                     title="Add Request"
                     onClick={(e) => { e.stopPropagation(); setAddingReqTo(col.name); setExpandedCols(p => ({ ...p, [col.name]: true })); }}
                   >
-                    +
+                    <Plus size={14} />
                   </button>
                   <button
-                    className="text-blue-400 hover:text-blue-300 px-1.5"
+                    className="text-blue-400 hover:text-blue-300 px-1.5 flex items-center"
                     title="Run Collection"
                     onClick={(e) => { e.stopPropagation(); onRunCollection(col.name); }}
                   >
-                    &#9654;
+                    <Play size={14} />
                   </button>
                 </div>
               </div>
@@ -235,7 +234,7 @@ export function CollectionsPanel({ activeRequest, onSelectRequest, onRunCollecti
                           setContextMenu({ x: e.pageX, y: e.pageY, type: 'req', col: col.name, req: req.name });
                         }}
                       >
-                        <span className={`text-[10px] font-bold w-10 shrink-0 ${getMethodColor(req.method)}`}>{req.method}</span>
+                        <span className={`${METHOD_BADGE_BASE} ${methodBadgeClass(req.method)} shrink-0`}>{req.method}</span>
                         {isRenaming ? (
                           <input
                             autoFocus

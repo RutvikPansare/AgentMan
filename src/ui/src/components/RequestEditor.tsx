@@ -1,11 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
+import { Send as SendIcon, Save as SaveIcon } from 'lucide-react';
 import { fetchAuthProfiles, createAuthProfile, fetchEnvironments } from '../api';
 import { KeyValueEditor } from './KeyValueEditor';
 import type { KeyValuePair } from './KeyValueEditor';
-import CodeMirror from '@uiw/react-codemirror';
-import { graphql } from 'cm6-graphql';
-import { buildClientSchema } from 'graphql';
-import { json } from '@codemirror/lang-json';
 
 interface RequestEditorProps {
   request: any;
@@ -42,13 +39,6 @@ export function RequestEditor({ request, onFire, onSave, onChange }: RequestEdit
   const [assertions, setAssertions] = useState<any[]>([]);
   const [bodyText, setBodyText] = useState('');
 
-  const [mode, setMode] = useState<'rest' | 'graphql'>('rest');
-  const [graphqlQuery, setGraphqlQuery] = useState('');
-  const [graphqlVariables, setGraphqlVariables] = useState('');
-  const [graphqlBodyTab, setGraphqlBodyTab] = useState<'query' | 'variables'>('query');
-  const [schema, setSchema] = useState<any>(null);
-  const [introspecting, setIntrospecting] = useState(false);
-
   const parseParams = (urlStr: string): KeyValuePair[] => {
     const qIndex = urlStr.indexOf('?');
     if (qIndex === -1) return [];
@@ -75,21 +65,10 @@ export function RequestEditor({ request, onFire, onSave, onChange }: RequestEdit
       setHeadersList(hl);
       setAssertions(request.assertions || []);
 
-      const reqMode = request.mode === 'graphql' ? 'graphql' : 'rest';
-      setMode(reqMode);
-      if (reqMode === 'graphql' && request.body && typeof request.body === 'object') {
-        const b = request.body as any;
-        setGraphqlQuery(b.query || '');
-        setGraphqlVariables(b.variables ? JSON.stringify(b.variables, null, 2) : '');
-        setBodyText('');
+      if (request.body) {
+        setBodyText(typeof request.body === 'object' ? JSON.stringify(request.body, null, 2) : String(request.body));
       } else {
-        if (request.body) {
-          setBodyText(typeof request.body === 'object' ? JSON.stringify(request.body, null, 2) : String(request.body));
-        } else {
-          setBodyText('');
-        }
-        setGraphqlQuery('');
-        setGraphqlVariables('');
+        setBodyText('');
       }
     }
   }, [request?.id, request?.name]);
@@ -157,15 +136,6 @@ export function RequestEditor({ request, onFire, onSave, onChange }: RequestEdit
     };
 
     const getParsedBody = () => {
-      if (mode === 'graphql') {
-        let vars: any = undefined;
-        if (graphqlVariables.trim()) {
-          try { vars = JSON.parse(graphqlVariables); } catch { vars = undefined; }
-        }
-        const body: any = { query: graphqlQuery };
-        if (vars) body.variables = vars;
-        return graphqlQuery.trim() ? body : undefined;
-      }
       if (!bodyText.trim()) return undefined;
       try {
         return JSON.parse(bodyText);
@@ -174,16 +144,8 @@ export function RequestEditor({ request, onFire, onSave, onChange }: RequestEdit
       }
     };
 
-    const effectiveMethod = mode === 'graphql' ? 'POST' : method;
-
     const buildRequest = () => {
-      const req: any = { ...request, mode, method: effectiveMethod, url, assertions, headers: getHeadersRecord(), body: getParsedBody() };
-      if (mode === 'graphql') {
-        // GraphQL endpoints expect JSON content type.
-        const hdrs = req.headers || {};
-        if (!hdrs['Content-Type'] && !hdrs['content-type']) hdrs['Content-Type'] = 'application/json';
-        req.headers = Object.keys(hdrs).length > 0 ? hdrs : undefined;
-      }
+      const req: any = { ...request, method, url, assertions, headers: getHeadersRecord(), body: getParsedBody() };
       if (authProfileId) req.authProfileId = authProfileId;
       else if (authType !== 'none') req.auth = { type: authType, credentials: authCreds };
       else { delete req.authProfileId; delete req.auth; }
@@ -198,93 +160,18 @@ export function RequestEditor({ request, onFire, onSave, onChange }: RequestEdit
       onSave(buildRequest());
     };
 
-    const INTROSPECTION_QUERY = `query IntrospectionQuery {
-  __schema {
-    queryType { name }
-    mutationType { name }
-    subscriptionType { name }
-    types {
-      ...FullType
-    }
-  }
-}
-
-fragment FullType on __Type {
-  kind
-  name
-  fields(includeDeprecated: true) {
-    name
-    type { ...TypeRef }
-  }
-}
-
-fragment TypeRef on __Type {
-  kind
-  name
-  ofType { kind name ofType { kind name ofType { kind name ofType { kind name ofType { kind name } } } } }
-}`;
-
-    const runIntrospection = async () => {
-      if (!url.trim()) { alert('Enter the GraphQL endpoint URL first.'); return; }
-      setIntrospecting(true);
-      try {
-        const res = await fetch('/api/run/adhoc', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            request: { name: 'introspection', method: 'POST', url, headers: getHeadersRecord(), body: { query: INTROSPECTION_QUERY } }
-          })
-        });
-        const data = await res.json();
-        const schemaData = data.response?.body?.data?.__schema || data.response?.body?.__schema;
-        if (schemaData) {
-          setSchema(schemaData);
-        } else {
-          alert('Introspection failed. Check the endpoint URL and auth.');
-        }
-      } catch (e: any) {
-        alert('Introspection error: ' + e.message);
-      } finally {
-        setIntrospecting(false);
-      }
-    };
-
-    const schemaFields = (): string[] => {
-      if (!schema) return [];
-      const queryType = schema.types?.find((t: any) => t.name === schema.queryType?.name);
-      return (queryType?.fields || []).map((f: any) => f.name).filter(Boolean);
-    };
-
-    const gqlSchemaObj = useMemo(() => {
-      if (!schema) return null;
-      try {
-        return buildClientSchema({ __schema: schema });
-      } catch (e) {
-        console.error('Error building GraphQL client schema:', e);
-        return null;
-      }
-    }, [schema]);
-
     // Report live edits so the parent can track dirty state.
     useEffect(() => {
       if (!onChange) return;
       onChange(buildRequest());
-    }, [mode, method, url, assertions, headersList, bodyText, graphqlQuery, graphqlVariables, authType, authProfileId, authCreds]);
+    }, [method, url, assertions, headersList, bodyText, authType, authProfileId, authCreds]);
 
   return (
     <div className="flex flex-col h-full bg-gray-900 border border-gray-800 rounded-md overflow-hidden">
       <div className="flex p-2 gap-2 border-b border-gray-800 bg-gray-950">
-        <button
-          className={`px-2 py-1 rounded text-xs font-semibold border transition-colors ${mode === 'graphql' ? 'bg-pink-600 text-white border-pink-500' : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700'}`}
-          onClick={() => setMode(m => m === 'graphql' ? 'rest' : 'graphql')}
-          title="Toggle REST / GraphQL mode"
-        >
-          {mode === 'graphql' ? 'GQL' : 'REST'}
-        </button>
         <select
-          className="bg-gray-800 text-gray-200 border border-gray-700 rounded px-2 py-1 text-sm font-semibold focus:outline-none disabled:opacity-50"
-          value={effectiveMethod}
-          disabled={mode === 'graphql'}
+          className="bg-gray-800 text-gray-200 border border-gray-700 rounded px-2 py-1 text-sm font-semibold focus:outline-none"
+          value={method}
           onChange={e => setMethod(e.target.value as any)}
         >
           <option>GET</option>
@@ -300,16 +187,18 @@ fragment TypeRef on __Type {
           onChange={e => handleUrlChange(e.target.value)}
           placeholder="https://api.example.com/v1/users"
         />
-        <button 
-          className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1 rounded text-sm font-semibold transition-colors"
+        <button
+          className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1 rounded text-sm font-semibold transition-colors flex items-center gap-1.5"
           onClick={handleFireWithAuth}
         >
+          <SendIcon size={14} />
           Send
         </button>
-        <button 
-          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1 rounded text-sm font-semibold transition-colors"
+        <button
+          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1 rounded text-sm font-semibold transition-colors flex items-center gap-1.5"
           onClick={handleSaveWithAuth}
         >
+          <SaveIcon size={14} />
           Save
         </button>
       </div>
@@ -336,64 +225,6 @@ fragment TypeRef on __Type {
             <KeyValueEditor pairs={headersList} onChange={setHeadersList} />
           </div>
         ) : activeTab === 'body' ? (
-          mode === 'graphql' ? (
-            <div className="flex flex-col h-full gap-2">
-              <div className="flex justify-between items-center px-1">
-                <div className="flex gap-1">
-                  <button
-                    className={`px-3 py-1 text-xs font-semibold rounded ${graphqlBodyTab === 'query' ? 'bg-gray-800 text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
-                    onClick={() => setGraphqlBodyTab('query')}
-                  >
-                    Query
-                  </button>
-                  <button
-                    className={`px-3 py-1 text-xs font-semibold rounded ${graphqlBodyTab === 'variables' ? 'bg-gray-800 text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
-                    onClick={() => setGraphqlBodyTab('variables')}
-                  >
-                    Variables
-                  </button>
-                </div>
-                <button
-                  onClick={runIntrospection}
-                  disabled={introspecting}
-                  className="text-xs text-pink-400 hover:text-pink-300 px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 transition-colors disabled:opacity-50"
-                  title="Fetch and parse the GraphQL schema from the endpoint"
-                >
-                  {introspecting ? 'Introspecting...' : 'Introspect'}
-                </button>
-              </div>
-              {graphqlBodyTab === 'query' ? (
-                <>
-                  {schema && schemaFields().length > 0 && (
-                    <div className="text-[10px] text-gray-500 px-1">
-                      Schema loaded: {schemaFields().length} query fields - {schemaFields().join(', ')}
-                    </div>
-                  )}
-                  <div className="flex-1 min-h-0 bg-gray-950 border border-gray-800 rounded overflow-hidden">
-                    <CodeMirror
-                      value={graphqlQuery}
-                      height="100%"
-                      theme="dark"
-                      extensions={gqlSchemaObj ? [graphql(gqlSchemaObj)] : []}
-                      onChange={(val) => setGraphqlQuery(val)}
-                      className="h-full text-sm font-mono [&_.cm-scroller]:overflow-auto"
-                    />
-                  </div>
-                </>
-              ) : (
-                <div className="flex-1 min-h-0 bg-gray-950 border border-gray-800 rounded overflow-hidden">
-                  <CodeMirror
-                    value={graphqlVariables}
-                    height="100%"
-                    theme="dark"
-                    extensions={[json()]}
-                    onChange={(val) => setGraphqlVariables(val)}
-                    className="h-full text-sm font-mono [&_.cm-scroller]:overflow-auto"
-                  />
-                </div>
-              )}
-            </div>
-          ) : (
           <div className="flex flex-col h-full gap-2">
             <div className="flex justify-between items-center px-1">
               <span className="text-sm font-semibold text-gray-400">Raw Body</span>
@@ -418,7 +249,6 @@ fragment TypeRef on __Type {
               spellCheck={false}
             />
           </div>
-          )
         ) : activeTab === 'assertions' ? (
           <div className="space-y-2">
             {assertions.map((ass, i) => (
