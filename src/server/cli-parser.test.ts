@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseArgs } from './cli-parser.js';
+import { parseArgs, resolveProjectDir } from './cli-parser.js';
 
 describe('cli-parser', () => {
   it('defaults to start command when no command is provided', () => {
@@ -30,5 +30,23 @@ describe('cli-parser', () => {
       reporter: 'json',
       projectDir: '/tmp'
     });
+  });
+});
+
+describe('resolveProjectDir', () => {
+  it('falls back to cwd when neither flag nor env var is set', () => {
+    expect(resolveProjectDir({ cwd: '/home/user/project' })).toBe('/home/user/project');
+  });
+
+  it('uses REQLY_PROJECT_DIR env var when no flag is given', () => {
+    expect(resolveProjectDir({ env: '/home/user/project', cwd: '/' })).toBe('/home/user/project');
+  });
+
+  it('prefers --project-dir flag over the env var', () => {
+    expect(resolveProjectDir({ flag: '/flag/dir', env: '/env/dir', cwd: '/' })).toBe('/flag/dir');
+  });
+
+  it('resolves a relative flag against cwd', () => {
+    expect(resolveProjectDir({ flag: '../sibling', cwd: '/home/user/project' })).toBe('/home/user/sibling');
   });
 });

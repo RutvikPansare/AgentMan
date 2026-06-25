@@ -67,6 +67,8 @@ export async function handleSetupCommand(parsed: ParsedArgs): Promise<number> {
     console.log('✅ For Claude Code (CLI), run this from inside your project directory:');
     console.log(`\n  claude mcp add reqly -- reqly start --project-dir .\n`);
     console.log('  The dot (.) tells Reqly to use the current folder as your project root.');
+    console.log('  If your AI tool always launches reqly from the wrong directory, set the');
+    console.log('  REQLY_PROJECT_DIR environment variable on the MCP server entry instead.');
   };
 
   console.log('Configuring Reqly MCP server...\n');

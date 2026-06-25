@@ -15,6 +15,16 @@ export interface ParsedArgs {
   };
 }
 
+// Resolves the project root the server should treat as the `.reqly` home.
+// Priority: --project-dir flag > REQLY_PROJECT_DIR env var > the process's cwd.
+// The env var exists because some MCP hosts let users set per-server env vars
+// but don't expose a way to edit the launch args - REQLY_PROJECT_DIR is the
+// escape hatch when the host always spawns reqly with the wrong cwd (e.g. `/`).
+export function resolveProjectDir(opts: { flag?: string; env?: string; cwd: string }): string {
+  const dir = opts.flag ?? opts.env;
+  return dir ? path.resolve(opts.cwd, dir) : opts.cwd;
+}
+
 export function parseArgs(argv: string[]): ParsedArgs {
   const result: ParsedArgs = {
     command: 'start',

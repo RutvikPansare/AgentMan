@@ -13,7 +13,7 @@ import { EngineContext } from '../mcp/tools/types.js';
 
 import { startExpressServer } from './express.js';
 
-import { parseArgs } from './cli-parser.js';
+import { parseArgs, resolveProjectDir } from './cli-parser.js';
 import { handleRunCommand } from './run-command.js';
 import { handleSetupCommand } from './setup-command.js';
 
@@ -26,7 +26,11 @@ async function main() {
   }
 
   const globalReqlyDir = path.join(os.homedir(), '.reqly');
-  const cwd = parsed.flags.projectDir ? path.resolve(process.cwd(), parsed.flags.projectDir) : process.cwd();
+  const cwd = resolveProjectDir({
+    flag: parsed.flags.projectDir,
+    env: process.env.REQLY_PROJECT_DIR,
+    cwd: process.cwd(),
+  });
   const projectReqlyDir = path.join(cwd, '.reqly');
 
   const collectionsDir = projectReqlyDir;

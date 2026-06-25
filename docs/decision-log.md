@@ -8,6 +8,9 @@ Newest entries at the top.
 
 ## 2026-06-24
 
+**Decision:** Added `REQLY_PROJECT_DIR` env var as a fallback (priority: `--project-dir` flag > `REQLY_PROJECT_DIR` env var > `process.cwd()`) for resolving the project root the server treats as the `.reqly` home. Extracted into a pure `resolveProjectDir()` in `src/server/cli-parser.ts`.
+**Why:** A user reported `mkdir '/.reqly' ENOENT` in a real project (Tellero) - their MCP host spawned `reqly start` with cwd `/` and no `--project-dir` flag, and the actual MCP launch config couldn't be located in any standard config file to add the flag. Some MCP host UIs let users set per-server env vars without exposing the launch args at all, so an env var escape hatch fixes the class of bug even when the args can't be edited. `reqly setup`'s Claude Code instructions now mention it.
+
 **Decision:** Adopted `lucide-react` as the single icon library for the localhost UI, replacing all hand-rolled inline `<svg>` blocks (stroke-style nav icons and Bootstrap-icons-style fill paths that had crept in across components).
 **Why:** Two inconsistent icon styles (stroke vs Bootstrap fill) had accumulated across NavRail, KeyValueEditor, EnvironmentsPanel, EnvironmentSwitcher, ResponseViewer, and App.tsx tab bar. Lucide is MIT-licensed, tree-shakeable, and matches the Hoppscotch-reference aesthetic CLAUDE.md's UI section calls for. One import path going forward instead of copy-pasted SVG markup per icon.
 
