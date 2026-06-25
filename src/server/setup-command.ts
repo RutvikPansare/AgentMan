@@ -6,11 +6,14 @@ import { ParsedArgs } from './cli-parser.js';
 export async function handleSetupCommand(parsed: ParsedArgs): Promise<number> {
   const target = parsed.args[0];
 
-  const binPath = process.argv[1] || 'reqly';
-  // Use `node /path/to/dist/server/index.js` or just `reqly` if installed globally
-  // We'll construct the command as `reqly` and args as `["start"]` assuming global installation
+  // Use `reqly` as the command (global install) with --project-dir so the server
+  // always resolves collections relative to the user's actual project, not wherever
+  // the AI tool happens to launch the process from.
   const mcpCommand = 'reqly';
-  const mcpArgs = ['start'];
+  // ${workspaceFolder} is interpolated by Cursor and most MCP-aware editors at launch time.
+  // For tools that don't support it, the user should re-run `reqly setup` from their project dir
+  // or pass --project-dir explicitly.
+  const mcpArgs = ['start', '--project-dir', '${workspaceFolder}'];
 
   const cursorConfigPath = path.join(os.homedir(), '.cursor', 'mcp.json');
   const geminiConfigPath = path.join(os.homedir(), '.gemini', 'config', 'mcp.json');
@@ -61,8 +64,9 @@ export async function handleSetupCommand(parsed: ParsedArgs): Promise<number> {
   };
 
   const printClaudeCode = () => {
-    console.log('✅ For Claude Code (CLI), run the following command in your project directory:');
-    console.log(`\n  claude mcp add reqly -- ${mcpCommand} ${mcpArgs.join(' ')}\n`);
+    console.log('✅ For Claude Code (CLI), run this from inside your project directory:');
+    console.log(`\n  claude mcp add reqly -- reqly start --project-dir .\n`);
+    console.log('  The dot (.) tells Reqly to use the current folder as your project root.');
   };
 
   console.log('Configuring Reqly MCP server...\n');
