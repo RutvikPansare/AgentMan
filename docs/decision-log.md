@@ -8,6 +8,9 @@ Newest entries at the top.
 
 ## 2026-06-24
 
+**Decision:** Added `reqly use <path>` and `reqly status` CLI commands, plus an `activeProject` field in `~/.reqly/config.json` as the final fallback in the project-dir resolution chain (priority: `--project-dir` flag > `REQLY_PROJECT_DIR` env var > `activeProject` config field > `process.cwd()`).
+**Why:** Claude Desktop spawns one global `reqly` MCP server process shared across every project, with no `${workspaceFolder}` equivalent and no way to inject per-project launch args or env vars per chat. T-064's env var fallback still required hand-editing `claude_desktop_config.json` per project switch. `reqly use` lets the user (or an agent) point the server at a project with a single command and no JSON editing; `reqly status` reports which source won, for debugging "why is it looking in the wrong folder".
+
 **Decision:** Added `REQLY_PROJECT_DIR` env var as a fallback (priority: `--project-dir` flag > `REQLY_PROJECT_DIR` env var > `process.cwd()`) for resolving the project root the server treats as the `.reqly` home. Extracted into a pure `resolveProjectDir()` in `src/server/cli-parser.ts`.
 **Why:** A user reported `mkdir '/.reqly' ENOENT` in a real project (Tellero) - their MCP host spawned `reqly start` with cwd `/` and no `--project-dir` flag, and the actual MCP launch config couldn't be located in any standard config file to add the flag. Some MCP host UIs let users set per-server env vars without exposing the launch args at all, so an env var escape hatch fixes the class of bug even when the args can't be edited. `reqly setup`'s Claude Code instructions now mention it.
 

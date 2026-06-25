@@ -12,6 +12,7 @@ export class AuthProfileNotFoundError extends Error {
 
 interface ConfigFile {
   authProfiles?: AuthProfile[];
+  activeProject?: string;
   [key: string]: any;
 }
 
@@ -81,6 +82,17 @@ export class AuthManager {
 
     profiles.splice(index, 1);
     config.authProfiles = profiles;
+    await this.saveConfig(config);
+  }
+
+  async getActiveProject(): Promise<string | undefined> {
+    const config = await this.loadConfig();
+    return config.activeProject;
+  }
+
+  async setActiveProject(projectDir: string): Promise<void> {
+    const config = await this.loadConfig();
+    config.activeProject = projectDir;
     await this.saveConfig(config);
   }
 }

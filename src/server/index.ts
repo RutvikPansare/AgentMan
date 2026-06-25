@@ -16,31 +16,44 @@ import { startExpressServer } from './express.js';
 import { parseArgs, resolveProjectDir } from './cli-parser.js';
 import { handleRunCommand } from './run-command.js';
 import { handleSetupCommand } from './setup-command.js';
+import { handleUseCommand } from './use-command.js';
+import { handleStatusCommand } from './status-command.js';
 
 async function main() {
   const parsed = parseArgs(process.argv);
-  
+
+  const globalReqlyDir = path.join(os.homedir(), '.reqly');
+  const globalConfigPath = path.join(globalReqlyDir, 'config.json');
+  const authManager = new AuthManager(globalConfigPath);
+
   if (parsed.command === 'setup') {
     const exitCode = await handleSetupCommand(parsed);
     process.exit(exitCode);
   }
 
-  const globalReqlyDir = path.join(os.homedir(), '.reqly');
+  if (parsed.command === 'use') {
+    const exitCode = await handleUseCommand(parsed, authManager);
+    process.exit(exitCode);
+  }
+
+  if (parsed.command === 'status') {
+    const exitCode = await handleStatusCommand(parsed, authManager);
+    process.exit(exitCode);
+  }
+
   const cwd = resolveProjectDir({
     flag: parsed.flags.projectDir,
     env: process.env.REQLY_PROJECT_DIR,
+    configActiveProject: await authManager.getActiveProject(),
     cwd: process.cwd(),
   });
   const projectReqlyDir = path.join(cwd, '.reqly');
 
   const collectionsDir = projectReqlyDir;
   const environmentsPath = path.join(projectReqlyDir, 'environments.yaml');
-  
-  const globalConfigPath = path.join(globalReqlyDir, 'config.json');
 
   const collectionManager = new CollectionManager(collectionsDir);
   const environmentManager = new EnvironmentManager(environmentsPath);
-  const authManager = new AuthManager(globalConfigPath);
 
   if (parsed.command === 'run') {
     const exitCode = await handleRunCommand(parsed, collectionManager, environmentManager, authManager);

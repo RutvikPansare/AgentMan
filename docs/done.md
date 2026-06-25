@@ -7,6 +7,7 @@ Newest date first. Don't edit history - only append.
 -->
 
 ## 2026-06-24
+- [x] **T-065** `reqly use <path>` + `reqly status` commands - `activeProject` field in `~/.reqly/config.json` as final fallback in the project-dir resolution chain (flag > env var > config > cwd), for hosts like Claude Desktop with no per-project launch context
 - [x] **T-064** Add `REQLY_PROJECT_DIR` env var fallback for project root resolution (fixes ENOENT when MCP host launches reqly with wrong cwd)
 - [x] **T-062** Response truncation for large payloads (MCP + engine)
 - [x] **T-063** MCP tools for environment and variable management

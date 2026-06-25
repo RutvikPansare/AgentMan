@@ -65,4 +65,21 @@ describe('AuthManager', () => {
   it('should throw error when deleting non-existent profile', async () => {
     await expect(manager.deleteProfile('missing-id')).rejects.toThrow(AuthProfileNotFoundError);
   });
+
+  it('should return undefined active project when never set', async () => {
+    expect(await manager.getActiveProject()).toBeUndefined();
+  });
+
+  it('should set and get the active project', async () => {
+    await manager.setActiveProject('/Users/dev/my-project');
+    expect(await manager.getActiveProject()).toBe('/Users/dev/my-project');
+  });
+
+  it('should preserve existing auth profiles when setting active project', async () => {
+    await manager.createProfile({ name: 'A', type: AuthType.BEARER, credentials: {} });
+    await manager.setActiveProject('/Users/dev/my-project');
+
+    expect(await manager.getActiveProject()).toBe('/Users/dev/my-project');
+    expect(await manager.listProfiles()).toHaveLength(1);
+  });
 });

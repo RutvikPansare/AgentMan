@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export interface ParsedArgs {
-  command: 'start' | 'run' | 'setup';
+  command: 'start' | 'run' | 'setup' | 'use' | 'status';
   args: string[];
   flags: {
     env?: string;
@@ -16,12 +16,13 @@ export interface ParsedArgs {
 }
 
 // Resolves the project root the server should treat as the `.reqly` home.
-// Priority: --project-dir flag > REQLY_PROJECT_DIR env var > the process's cwd.
-// The env var exists because some MCP hosts let users set per-server env vars
-// but don't expose a way to edit the launch args - REQLY_PROJECT_DIR is the
-// escape hatch when the host always spawns reqly with the wrong cwd (e.g. `/`).
-export function resolveProjectDir(opts: { flag?: string; env?: string; cwd: string }): string {
-  const dir = opts.flag ?? opts.env;
+// Priority: --project-dir flag > REQLY_PROJECT_DIR env var > activeProject in
+// ~/.reqly/config.json (set via `reqly use`) > the process's cwd.
+// The env var and config fallback exist because some MCP hosts (Claude Desktop)
+// spawn one global server process with no per-project cwd and no way to inject
+// per-project launch args - these are the escape hatches for that case.
+export function resolveProjectDir(opts: { flag?: string; env?: string; configActiveProject?: string; cwd: string }): string {
+  const dir = opts.flag ?? opts.env ?? opts.configActiveProject;
   return dir ? path.resolve(opts.cwd, dir) : opts.cwd;
 }
 
@@ -36,7 +37,7 @@ export function parseArgs(argv: string[]): ParsedArgs {
   let i = 0;
   
   // check if first non-flag argument is a command
-  const validCommands = ['start', 'run', 'setup'];
+  const validCommands = ['start', 'run', 'setup', 'use', 'status'];
   let commandFound = false;
 
   while (i < args.length) {
@@ -58,7 +59,7 @@ export function parseArgs(argv: string[]): ParsedArgs {
       process.exit(0);
     } else if (!arg.startsWith('-')) {
       if (!commandFound && validCommands.includes(arg)) {
-        result.command = arg as 'start' | 'run' | 'setup';
+        result.command = arg as 'start' | 'run' | 'setup' | 'use' | 'status';
         commandFound = true;
       } else {
         result.args.push(arg);
